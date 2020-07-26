@@ -1,0 +1,15 @@
+name: Build
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  Verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm run package
+      - run: git diff --exit-code
+        name: Verify that distribution/index.js is up to date

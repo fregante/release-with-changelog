@@ -1,0 +1,17 @@
+name: Lint
+
+on:
+  pull_request:
+    paths:
+      - index.js
+  push:
+    paths:
+      - index.js
+
+jobs:
+  XO:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npx xo

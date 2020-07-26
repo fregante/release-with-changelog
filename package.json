@@ -1,35 +1,34 @@
 {
-  "name": "javascript-action",
+  "name": "release-with-changelog",
   "version": "1.0.0",
-  "description": "JavaScript Action Template",
-  "main": "index.js",
+  "description": "Create a GitHub relase with changelog for every tag you push",
+  "main": "distribution/index.js",
   "scripts": {
-    "lint": "eslint .",
-    "prepare": "ncc build index.js -o dist --source-map",
-    "test": "jest",
-    "all": "npm run lint && npm run prepare && npm run test"
+    "package": "ncc build index.js -o distribution",
+    "test": "xo"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
-  },
+  "repository": "notlmn/release-with-changelog",
   "keywords": [
-    "GitHub",
-    "Actions",
-    "JavaScript"
+    "github",
+    "actions",
+    "javascript",
+    "tags",
+    "releases",
+    "changelog"
   ],
-  "author": "",
+  "author": "Laxman Damera",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
-  },
-  "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
-    "@actions/core": "^1.1.1"
+    "@actions/core": "^1.1.1",
+    "@actions/github": "^4.0.0"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",
-    "eslint": "^7.4.0",
-    "jest": "^26.1.0"
+    "xo": "^0.32.1"
+  },
+  "xo": {
+    "ignore": [
+      "distribution"
+    ]
   }
 }

@@ -1,0 +1,48 @@
+# release-with-changelog
+
+<img src="./media/releases.png" align="right" width="400">
+
+Creates reasonable enough GitHub releases for pushed tags, with the commit log as release body.
+
+By no means is this an action with extensive configurable options except for the ones already provided. But I would love to add some more in the future.
+
+## Usage
+
+The action requires you to pass in you personal access token as the environment variable `RELEASE_TOKEN` with access to `repo` scopes to interact with GitHub API and create a release.
+
+``` yml
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 100
+    - uses: notlmn/release-with-changelog@v1
+      with:
+        header: '### Changelog'
+        footer: 'Custom footer'
+        include-hash: true
+        include-range: true
+      env:
+        RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+```
+
+### Clone depth
+
+The action expects you to do a deep clone of the repository using `actions/checkout@v2` in order to get historical commits. You can use `fetch-depth: 0` for `actions/checkout` action to clone entire repository or have a reasonable number like `100` to fetch the last 100 commits.
+
+## Inputs
+
+- `header`: Content to prepend at the start of release notes. Default: `''`.
+- `footer`: Content to append at the end of release notes. Default: `''`.
+- `include-hash`: Prepend and link commit hash to each entry. Default: `false`.
+- `include-range`: Adds a compare link between tags at end of release roles. Default: `true`.
+
+## Outputs
+
+None.
+
+## License
+
+[MIT](./license)

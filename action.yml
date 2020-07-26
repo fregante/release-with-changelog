@@ -1,13 +1,26 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Release with Changelog'
+icon: 'tag'
+branding:
+  icon: 'tag'
+  color: 'purple'
+description: 'Create a GitHub relase with changelog for every tag you push'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
-    required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  include-hash:
+    description: Prepend and link commit hash to each entry
+    required: false
+    default: false
+  include-range:
+    description: Adds a compare link between tags at end of release roles
+    required: false
+    default: true
+  header:
+    description: Content to prepend at the start of release notes
+    required: false
+    default: ''
+  footer:
+    description: Content to append at the end of release notes
+    required: false
+    default: ''
 runs:
   using: 'node12'
-  main: 'dist/index.js'
+  main: 'distribution/index.js'
