@@ -20,21 +20,21 @@ async function run() {
 			core.setOutput('There is nothing to be done here. Exiting!');
 		}
 
-		const latestTag = core.getInput('tag') || tags[0];
+		let tag = core.getInput('tag') || tags[0];
 
 		// Warn users of tags out of order / for pushing older tags
 		if (process.env.GITHUB_REF.startsWith('refs/tags/') === true) {
-			latestTag = process.env.GITHUB_REF.replace('refs/tags/', '');
-			if (latestTag !== tags[0]) {
+			tag = process.env.GITHUB_REF.replace('refs/tags/', '');
+			if (tag !== tags[0]) {
 				core.warning('Looks like you may be pushing outdated tags. Make sure you are pushing the right tags!');
 			}
 		}
 
 		// Get range to generate diff
-		let range = tags[1] + '..' + latestTag;
+		let range = tags[1] + '..' + tag;
 		if (tags.length === 1) {
 			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
-			range = rootCommit.trim('') + '..' + latestTag;
+			range = rootCommit.trim('') + '..' + tag;
 		}
 
 		// Get commits between computed range
@@ -73,13 +73,13 @@ async function run() {
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
-			tag_name: pushedTag, // eslint-disable-line camelcase
+			tag_name: tag, // eslint-disable-line camelcase
 			body: releaseBody.join('\n'),
 			draft: false,
 			prerelease: false
 		});
 
-		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
+		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + tag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
 	}
