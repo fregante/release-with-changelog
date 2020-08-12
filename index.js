@@ -5,12 +5,6 @@ const execFile = util.promisify(require('child_process').execFile);
 
 async function run() {
 	try {
-		// Run only on pushing a tag
-		if (process.env.GITHUB_REF.startsWith('refs/tags/') === false) {
-			return;
-		}
-
-		const pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
 		const {owner, repo} = context.repo;
 
 		const header = core.getInput('header');
@@ -22,16 +16,25 @@ async function run() {
 		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
+		if (tags.length === 0) {
+			core.setOutput('There is nothing to be done here. Exiting!');
+		}
+
+		const latestTag = core.getInput('tag') || tags[0];
+
 		// Warn users of tags out of order / for pushing older tags
-		if (pushedTag !== tags[0]) {
-			core.warning('Looks like you may be pushing outdated tags. Make sure you are pushing the right tags!');
+		if (process.env.GITHUB_REF.startsWith('refs/tags/') === true) {
+			latestTag = process.env.GITHUB_REF.replace('refs/tags/', '');
+			if (latestTag !== tags[0]) {
+				core.warning('Looks like you may be pushing outdated tags. Make sure you are pushing the right tags!');
+			}
 		}
 
 		// Get range to generate diff
-		let range = tags[1] + '..' + pushedTag;
+		let range = tags[1] + '..' + latestTag;
 		if (tags.length === 1) {
 			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
-			range = rootCommit.trim('') + '..' + pushedTag;
+			range = rootCommit.trim('') + '..' + latestTag;
 		}
 
 		// Get commits between computed range
@@ -66,7 +69,7 @@ async function run() {
 			releaseBody.push(`\n[\`${range}\`](https://github.com/${owner}/${repo}/compare/${range})`);
 		}
 
-		const octokit = getOctokit(process.env.RELEASE_TOKEN);
+		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
