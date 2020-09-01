@@ -182,24 +182,21 @@ async function run() {
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
 		if (tags.length === 0) {
-			core.setOutput('There is nothing to be done here. Exiting!');
+			core.info('There is nothing to be done here. Exiting!');
 		}
 
-		const latestTag = core.getInput('tag') || tags[0];
+		let tag = core.getInput('tag') || tags[0];
 
 		// Warn users of tags out of order / for pushing older tags
-		if (process.env.GITHUB_REF.startsWith('refs/tags/') === true) {
-			latestTag = process.env.GITHUB_REF.replace('refs/tags/', '');
-			if (latestTag !== tags[0]) {
-				core.warning('Looks like you may be pushing outdated tags. Make sure you are pushing the right tags!');
-			}
+		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
+			tag = process.env.GITHUB_REF.replace('refs/tags/', '');
 		}
 
 		// Get range to generate diff
-		let range = tags[1] + '..' + latestTag;
+		let range = tags[1] + '..' + tag;
 		if (tags.length === 1) {
 			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
-			range = rootCommit.trim('') + '..' + latestTag;
+			range = rootCommit.trim('') + '..' + tag;
 		}
 
 		// Get commits between computed range
@@ -213,7 +210,7 @@ async function run() {
 			releaseBody.push(header + '\n');
 		}
 
-		if (commits.length === 0) {
+		if (commits.length < 2) {
 			releaseBody.push('__There isn’t anything to compare__');
 		} else {
 			for (const commit of commits) {
@@ -238,13 +235,13 @@ async function run() {
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
-			tag_name: pushedTag, // eslint-disable-line camelcase
+			tag_name: tag, // eslint-disable-line camelcase
 			body: releaseBody.join('\n'),
 			draft: false,
 			prerelease: false
 		});
 
-		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
+		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + tag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
 	}

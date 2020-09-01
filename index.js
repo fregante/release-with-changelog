@@ -17,17 +17,14 @@ async function run() {
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
 		if (tags.length === 0) {
-			core.setOutput('There is nothing to be done here. Exiting!');
+			core.info('There is nothing to be done here. Exiting!');
 		}
 
 		let tag = core.getInput('tag') || tags[0];
 
 		// Warn users of tags out of order / for pushing older tags
-		if (process.env.GITHUB_REF.startsWith('refs/tags/') === true) {
+		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
 			tag = process.env.GITHUB_REF.replace('refs/tags/', '');
-			if (tag !== tags[0]) {
-				core.warning('Looks like you may be pushing outdated tags. Make sure you are pushing the right tags!');
-			}
 		}
 
 		// Get range to generate diff
@@ -48,7 +45,7 @@ async function run() {
 			releaseBody.push(header + '\n');
 		}
 
-		if (commits.length === 0) {
+		if (commits.length < 2) {
 			releaseBody.push('__There isn’t anything to compare__');
 		} else {
 			for (const commit of commits) {

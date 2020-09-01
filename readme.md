@@ -24,7 +24,7 @@ jobs:
         footer: 'Custom footer'
         include-hash: true
         include-range: true
-        token: ${{ secrets.RELEASE_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Clone depth
