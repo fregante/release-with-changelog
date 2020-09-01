@@ -180,9 +180,11 @@ async function run() {
 		// Get all tags sorted by recently created tags
 		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
+		core.info('List of tags found: ' + JSON.stringify(tags));
 
 		if (tags.length === 0) {
 			core.info('There is nothing to be done here. Exiting!');
+			return;
 		}
 
 		let tag = core.getInput('tag') || tags[0];
@@ -190,14 +192,17 @@ async function run() {
 		// Warn users of tags out of order / for pushing older tags
 		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
 			tag = process.env.GITHUB_REF.replace('refs/tags/', '');
+			core.info('Using pushed tag as reference: ' + tag);
 		}
 
 		// Get range to generate diff
 		let range = tags[1] + '..' + tag;
-		if (tags.length === 1) {
+		if (tags.length < 2) {
 			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
 			range = rootCommit.trim('') + '..' + tag;
 		}
+
+		core.info('Computed range: ' + range);
 
 		// Get commits between computed range
 		let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
@@ -210,7 +215,7 @@ async function run() {
 			releaseBody.push(header + '\n');
 		}
 
-		if (commits.length < 2) {
+		if (commits.length === 0) {
 			releaseBody.push('__There isn’t anything to compare__');
 		} else {
 			for (const commit of commits) {
