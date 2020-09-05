@@ -177,29 +177,30 @@ async function run() {
 		const includeHash = core.getInput('include-hash');
 		const includeRange = core.getInput('include-range');
 
-		// Get all tags sorted by recently created tags
+		// Fetch tags from remote
+		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
+
+		// Get all tags, sorted by recently created tags
 		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
-		core.info('List of tags found: ' + JSON.stringify(tags));
 
 		if (tags.length === 0) {
 			core.info('There is nothing to be done here. Exiting!');
 			return;
 		}
 
-		let tag = core.getInput('tag') || tags[0];
+		let pushedTag = core.getInput('tag') || tags[0];
 
-		// Warn users of tags out of order / for pushing older tags
 		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
-			tag = process.env.GITHUB_REF.replace('refs/tags/', '');
-			core.info('Using pushed tag as reference: ' + tag);
+			pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
+			core.info('Using pushed tag as reference: ' + pushedTag);
 		}
 
 		// Get range to generate diff
-		let range = tags[1] + '..' + tag;
+		let range = tags[1] + '..' + pushedTag;
 		if (tags.length < 2) {
 			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
-			range = rootCommit.trim('') + '..' + tag;
+			range = rootCommit.trim('') + '..' + pushedTag;
 		}
 
 		core.info('Computed range: ' + range);
@@ -240,13 +241,13 @@ async function run() {
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
-			tag_name: tag, // eslint-disable-line camelcase
+			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: releaseBody.join('\n'),
 			draft: false,
 			prerelease: false
 		});
 
-		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + tag + '`');
+		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
 	}
