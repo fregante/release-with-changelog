@@ -170,6 +170,12 @@ const execFile = util.promisify(__webpack_require__(129).execFile);
 
 async function run() {
 	try {
+		// Run only on pushing a tag
+		if (process.env.GITHUB_REF.startsWith('refs/tags/') === false) {
+			return;
+		}
+
+		const pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
 		const {owner, repo} = context.repo;
 
 		const header = core.getInput('header');
@@ -177,33 +183,21 @@ async function run() {
 		const includeHash = core.getInput('include-hash');
 		const includeRange = core.getInput('include-range');
 
-		// Fetch tags from remote
-		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
-
-		// Get all tags, sorted by recently created tags
+		// Get all tags sorted by recently created tags
 		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
-		if (tags.length === 0) {
-			core.info('There is nothing to be done here. Exiting!');
-			return;
-		}
-
-		let pushedTag = core.getInput('tag') || tags[0];
-
-		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
-			pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
-			core.info('Using pushed tag as reference: ' + pushedTag);
+		// Warn users of tags out of order / for pushing older tags
+		if (pushedTag !== tags[0]) {
+			core.warning('Looks like you may be pushing outdated tags. Make sure you are pushing the right tags!');
 		}
 
 		// Get range to generate diff
 		let range = tags[1] + '..' + pushedTag;
-		if (tags.length < 2) {
+		if (tags.length === 1) {
 			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
 			range = rootCommit.trim('') + '..' + pushedTag;
 		}
-
-		core.info('Computed range: ' + range);
 
 		// Get commits between computed range
 		let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
@@ -237,7 +231,7 @@ async function run() {
 			releaseBody.push(`\n[\`${range}\`](https://github.com/${owner}/${repo}/compare/${range})`);
 		}
 
-		const octokit = getOctokit(core.getInput('token'));
+		const octokit = getOctokit(process.env.RELEASE_TOKEN);
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
