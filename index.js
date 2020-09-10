@@ -55,12 +55,7 @@ async function run() {
 			releaseBody.push('__There isn’t anything to compare__');
 		} else {
 			for (const commit of commits) {
-				const hash = commit.slice(0, 40);
-				if (includeHash) {
-					releaseBody.push(`- [\`${hash.slice(0, 8)}\`](https://github.com/${owner}/${repo}/commits/${hash}) ${commit.slice(40)}`);
-				} else {
-					releaseBody.push('- ' + commit.slice(40));
-				}
+				releaseBody.push(`- ${includeHash ? hash.slice(0, 8) : ''} ${commit.slice(40)}`);
 			}
 		}
 
