@@ -55,7 +55,7 @@ async function run() {
 			releaseBody.push('__There isn’t anything to compare__');
 		} else {
 			for (const commit of commits) {
-				releaseBody.push(`- ${includeHash ? hash.slice(0, 8) : ''} ${commit.slice(40)}`);
+				releaseBody.push(`- ${includeHash ? commit.slice(0, 8) : ''} ${commit.slice(40)}`);
 			}
 		}
 
