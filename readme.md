@@ -8,8 +8,6 @@ By no means is this an action with extensive configurable options except for the
 
 ## Usage
 
-The action requires you to pass in you personal access token as the environment variable `RELEASE_TOKEN` with access to `repo` scopes to interact with GitHub API and create a release.
-
 ``` yml
 jobs:
   Release:
@@ -18,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 100
-    - uses: notlmn/release-with-changelog@v1
+    - uses: notlmn/release-with-changelog@v2
       with:
         header: '### Changelog'
         footer: 'Custom footer'
