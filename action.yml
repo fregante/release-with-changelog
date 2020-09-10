@@ -5,6 +5,12 @@ branding:
   color: 'purple'
 description: 'Create a GitHub relase with changelog for every tag you push'
 inputs:
+  tag:
+    description: Specific tag to generate changelog against
+    required: false
+  token:
+    description: Personal access token (PAT) used to create releases
+    required: true
   include-hash:
     description: Prepend and link commit hash to each entry
     required: false

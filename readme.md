@@ -24,8 +24,7 @@ jobs:
         footer: 'Custom footer'
         include-hash: true
         include-range: true
-      env:
-        RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Clone depth
@@ -38,6 +37,8 @@ The action expects you to do a deep clone of the repository using `actions/check
 - `footer`: Content to append at the end of release notes. Default: `''`.
 - `include-hash`: Prepend and link commit hash to each entry. Default: `false`.
 - `include-range`: Adds a compare link between tags at end of release roles. Default: `true`.
+- `tag`: Specific tag to generate changelog against. Default: _latest tag available_.
+- `token`: [Personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) used to create releases.
 
 ## Outputs
 
