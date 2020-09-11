@@ -19,6 +19,10 @@ inputs:
     description: Adds a compare link between tags at end of release roles
     required: false
     default: true
+  exclude:
+    description: Regex to exclude commits based on their title (don't include the initial and final `/`)
+    required: false
+    default: ''
   header:
     description: Content to prepend at the start of release notes
     required: false
