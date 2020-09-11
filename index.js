@@ -11,8 +11,8 @@ async function run() {
 		const footer = core.getInput('footer');
 
 		// @TODO: Fix boolean checks when https://github.com/actions/toolkit/issues/361 gets resolved
-		const includeHash = core.getInput('include-hash').toString() === 'true';
-		const includeRange = core.getInput('include-range').toString() === 'true';
+		const includeHash = core.getInput('include-hash') === 'true';
+		const includeRange = core.getInput('include-range') === 'true';
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
