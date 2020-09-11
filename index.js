@@ -14,6 +14,8 @@ async function run() {
 		const includeHash = core.getInput('include-hash') === 'true';
 		const includeRange = core.getInput('include-range') === 'true';
 
+		const exclude = core.getInput('exclude');
+
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
 
@@ -44,7 +46,15 @@ async function run() {
 
 		// Get commits between computed range
 		let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
-		commits = commits.split('\n').filter(Boolean);
+		commits = commits.split('\n').filter(Boolean).map(line => ({
+			hash: includeHash ? line.slice(0, 8) : '',
+			title: line.slice(40)
+		}));
+
+		if (exclude) {
+			const regex = new RegExp(exclude);
+			commits.filter(({title}) => !regex.test(title));
+		}
 
 		// Generate markdown content
 		const releaseBody = [];
@@ -56,8 +66,8 @@ async function run() {
 		if (commits.length === 0) {
 			releaseBody.push('__There isn’t anything to compare__');
 		} else {
-			for (const commit of commits) {
-				releaseBody.push(`- ${includeHash ? commit.slice(0, 8) : ''} ${commit.slice(40)}`);
+			for (const {hash, title} of commits) {
+				releaseBody.push(`- ${hash} ${title}`);
 			}
 		}
 
