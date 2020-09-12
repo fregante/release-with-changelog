@@ -53,7 +53,7 @@ async function run() {
 
 		if (exclude) {
 			const regex = new RegExp(exclude);
-			commits.filter(({title}) => !regex.test(title));
+			commits = commits.filter(({title}) => !regex.test(title));
 		}
 
 		// Generate markdown content
