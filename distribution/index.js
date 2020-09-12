@@ -219,7 +219,7 @@ async function run() {
 		}
 
 		if (commits.length === 0) {
-			releaseBody.push('__There isn’t anything to compare__');
+			releaseBody.push('_Maintenance release_');
 		} else {
 			for (const commit of commits) {
 				releaseBody.push(`- ${includeHash ? commit.slice(0, 8) : ''} ${commit.slice(40)}`);
