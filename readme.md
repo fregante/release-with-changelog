@@ -35,6 +35,7 @@ The action expects you to do a deep clone of the repository using `actions/check
 - `footer`: Content to append at the end of release notes. Default: `''`.
 - `include-hash`: Prepend and link commit hash to each entry. Default: `false`.
 - `include-range`: Adds a compare link between tags at end of release roles. Default: `true`.
+- `exclude`: Regex to exclude commits based on their title (don't include the initial and final `/`). Default: `''`. Example: `exclude: '^Meta:'
 - `tag`: Specific tag to generate changelog against. Default: _latest tag available_.
 - `token`: [Personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) used to create releases.
 
