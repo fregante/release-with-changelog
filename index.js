@@ -7,13 +7,10 @@ async function run() {
 	try {
 		const {owner, repo} = context.repo;
 
-		const header = core.getInput('header');
-		const footer = core.getInput('footer');
+		const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
-		// @TODO: Fix boolean checks when https://github.com/actions/toolkit/issues/361 gets resolved
-		const includeHash = core.getInput('include-hash') === 'true';
-		const includeRange = core.getInput('include-range') === 'true';
-
+		const releaseTemplate = core.getInput('template');
+		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
 
 		// Fetch tags from remote
@@ -47,7 +44,7 @@ async function run() {
 		// Get commits between computed range
 		let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
 		commits = commits.split('\n').filter(Boolean).map(line => ({
-			hash: includeHash ? line.slice(0, 8) : '',
+			hash: line.slice(0, 8),
 			title: line.slice(40)
 		}));
 
@@ -57,26 +54,17 @@ async function run() {
 		}
 
 		// Generate markdown content
-		const releaseBody = [];
-
-		if (header) {
-			releaseBody.push(header + '\n');
-		}
-
+		const commitEntries = [];
 		if (commits.length === 0) {
-			releaseBody.push('_Maintenance release_');
+			commitEntries.push('_Maintenance release_');
 		} else {
 			for (const {hash, title} of commits) {
-				releaseBody.push(`- ${hash} ${title}`);
+				const line = commitTemplate
+					.replace('{hash}', hash)
+					.replace('{title}', title)
+					.replace('{url}', repoURL + '/commit/' + hash);
+				commitEntries.push(line);
 			}
-		}
-
-		if (footer) {
-			releaseBody.push('\n' + footer);
-		}
-
-		if (includeRange) {
-			releaseBody.push(`\n[\`${range}\`](https://github.com/${owner}/${repo}/compare/${range})`);
 		}
 
 		const octokit = getOctokit(core.getInput('token'));
@@ -84,7 +72,10 @@ async function run() {
 			repo,
 			owner,
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: releaseBody.join('\n'),
+			body: releaseTemplate
+				.replace('{version}', pushedTag)
+				.replace('{commits}', commitEntries.join('\n'))
+				.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`),
 			draft: false,
 			prerelease: false
 		});

@@ -11,26 +11,23 @@ inputs:
   token:
     description: Personal access token (PAT) used to create releases
     required: true
-  include-hash:
-    description: Prepend and link commit hash to each entry
-    required: false
-    default: false
-  include-range:
-    description: Adds a compare link between tags at end of release roles
-    required: false
-    default: true
   exclude:
     description: Regex to exclude commits based on their title (don't include the initial and final `/`)
     required: false
     default: ''
-  header:
-    description: Content to prepend at the start of release notes
+  template:
+    description: Markdown template to be included in release notes
     required: false
-    default: ''
-  footer:
-    description: Content to append at the end of release notes
+    default: |
+      ### Changelog
+
+      {commits}
+
+      {range}
+  commit-template:
+    description: Template for each commit entry in release notes
     required: false
-    default: ''
+    default: '- {hash} {title}'
 runs:
   using: 'node12'
   main: 'distribution/index.js'

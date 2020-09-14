@@ -31,33 +31,28 @@ The action expects you to do a deep clone of the repository using `actions/check
 
 ## Inputs
 
-### header
-
-Default: `''`
-
-Content to prepend at the start of release notes. 
-
 ### token
 
 Required: [Personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) used to create releases.
 
-### footer
+### template
 
-Default: `''`
+Default:
+``` yml
+### Changelog
 
-Content to append at the end of release notes.
+{commits}
 
-### include-hash
+{range}
+```
 
-Default: `false`
+Markdown template to be included in release notes.
 
-Prepend and link commit hash to each entry.
+### commit-template
 
-### include-range
+Default: `'- {hash} {title}'`
 
-Default: `true`
-
-Adds a compare link between tags at end of release roles.
+Template for each commit entry in release notes.
 
 ### exclude
 
