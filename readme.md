@@ -4,6 +4,8 @@
 
 Creates reasonable enough GitHub releases for pushed tags, with the commit log as release body.
 
+The action also has customizable release body, that support markdown, and template fields. See [template](#template) option to see how that works.
+
 By no means is this an action with extensive configurable options except for the ones already provided. But I would love to add some more in the future.
 
 ## Usage
