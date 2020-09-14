@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  push:
+    tags: # Excludes generic vN tags
+      - v2.*
+      - v3.*
+      - v4.*
+      - v5.*
+
+jobs:
+  Changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+      - uses: notlmn/release-with-changelog@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exclude: '^Meta'
