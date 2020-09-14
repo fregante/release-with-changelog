@@ -62,7 +62,7 @@ Adds a compare link between tags at end of release roles.
 ### exclude
 
 Default: `''` <br>
-Example: `'^Meta:'
+Example: `'^Meta:'`
 
 Regex to exclude commits based on their title (don't include the initial and final `/`).
 
