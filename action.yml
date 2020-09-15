@@ -19,13 +19,11 @@ inputs:
     description: Markdown template to be included in release notes
     required: false
     default: |
-      ### Changelog
-
       {commits}
 
       {range}
   commit-template:
-    description: Template for each commit entry in release notes
+    description: Markdown template for each commit entry in release notes
     required: false
     default: '- {hash} {title}'
 runs:

@@ -48,13 +48,17 @@ Default:
 {range}
 ```
 
-Markdown template to be included in release notes.
+Markdown template to be included in release notes. Available replacements:
+
+- `{commits}` description here
+- `{range}` description here
+- etc
 
 ### commit-template
 
 Default: `'- {hash} {title}'`
 
-Template for each commit entry in release notes.
+Markdown template for each commit entry in release notes.
 
 ### exclude
 

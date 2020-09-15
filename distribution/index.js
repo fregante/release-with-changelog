@@ -238,7 +238,6 @@ async function run() {
 			owner,
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: releaseTemplate
-				.replace('{version}', pushedTag)
 				.replace('{commits}', commitEntries.join('\n'))
 				.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`),
 			draft: false,
