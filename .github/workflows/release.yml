@@ -22,4 +22,4 @@ jobs:
       - name: Update major tag
         run: |
           MAJOR=$(echo ${{ github.event.inputs.Version }} | sed 's/\..*//')
-          git push origin HEAD:refs/tags/$MAJOR -f
+          git push origin HEAD:refs/tags/$MAJOR --force
