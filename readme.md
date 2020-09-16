@@ -4,6 +4,8 @@
 
 Creates reasonable enough GitHub releases for pushed tags, with the commit log as release body.
 
+The action also has customizable release body, that support markdown, and template fields. See [template](#template) option to see how that works.
+
 By no means is this an action with extensive configurable options except for the ones already provided. But I would love to add some more in the future.
 
 ## Usage
@@ -31,33 +33,33 @@ The action expects you to do a deep clone of the repository using `actions/check
 
 ## Inputs
 
-### header
-
-Default: `''`
-
-Content to prepend at the start of release notes. 
-
 ### token
 
 Required: [Personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) used to create releases.
 
-### footer
+### template
 
-Default: `''`
+Default:
+``` yml
+{commits}
 
-Content to append at the end of release notes.
+{range}
+```
 
-### include-hash
+Markdown template to be included in release notes. Available replacements:
 
-Default: `false`
+- `{commits}` List of commits for this release, see [`commit-template`](#commit-template) below for format of each entry.
+- `{range}` A link to diff on GitHub between the last and current release.
 
-Prepend and link commit hash to each entry.
+### commit-template
 
-### include-range
+Default: `'- {hash} {title}'`
 
-Default: `true`
+Markdown template for each commit entry in release notes. Available replacements:
 
-Adds a compare link between tags at end of release roles.
+- `{title}` A single line title of the commit.
+- `{hash}` Abbreviated commit hash, gets linkified automatically in release notes.
+- `{url}` Plain link to commit on GitHub.
 
 ### exclude
 
