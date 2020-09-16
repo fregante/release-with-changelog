@@ -41,8 +41,6 @@ Required: [Personal access token](https://docs.github.com/en/github/authenticati
 
 Default:
 ``` yml
-### Changelog
-
 {commits}
 
 {range}
@@ -50,15 +48,18 @@ Default:
 
 Markdown template to be included in release notes. Available replacements:
 
-- `{commits}` description here
-- `{range}` description here
-- etc
+- `{commits}` List of commits for this release, see [`commit-template`](#commit-template) below for format of each entry.
+- `{range}` A link to diff on GitHub between the last and current release.
 
 ### commit-template
 
 Default: `'- {hash} {title}'`
 
-Markdown template for each commit entry in release notes.
+Markdown template for each commit entry in release notes. Available replacements:
+
+- `{title}` A single line title of the commit.
+- `{hash}` Abbreviated commit hash, gets linkified automatically in release notes.
+- `{url}` Plain link to commit on GitHub.
 
 ### exclude
 
