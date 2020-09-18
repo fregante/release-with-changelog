@@ -17,14 +17,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 100
-    - uses: notlmn/release-with-changelog@v2
+        fetch-depth: 50
+    - uses: notlmn/release-with-changelog@v3
       with:
-        header: '### Changelog'
-        footer: 'Custom footer'
-        include-hash: true
-        include-range: true
         token: ${{ secrets.GITHUB_TOKEN }}
+        exclude: '^Meta'
+        commit-template: '- {title} ← {hash}'
+        template: |
+          ### Changelog
+
+          {commits}
+
+          {range}
+
+          ❤
 ```
 
 ### Clone depth
