@@ -19,7 +19,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           exclude: ^Meta
-          template: {commits}
+          template: '{commits}'
       - name: Update major tag
         run: |
           MAJOR=$(echo ${{ github.event.inputs.Version }} | sed 's/\..*//')
