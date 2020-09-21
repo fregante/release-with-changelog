@@ -21,6 +21,14 @@ jobs:
     - uses: notlmn/release-with-changelog@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Or you can customize it further:
+
+``` yml
+    - uses: notlmn/release-with-changelog@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         exclude: '^Meta'
         commit-template: '- {title} ← {hash}'
         template: |
