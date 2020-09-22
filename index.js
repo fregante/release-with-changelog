@@ -3,15 +3,35 @@ const core = require('@actions/core');
 const util = require('util');
 const execFile = util.promisify(require('child_process').execFile);
 
+function formatCommit(commit, template, repoURL) {
+	return template
+		.replace('{hash}', commit.hash)
+		.replace('{title}', commit.title)
+		.replace('{url}', repoURL + '/commit/' + commit.hash);
+}
+
 async function run() {
 	try {
 		const {owner, repo} = context.repo;
+		const octokit = getOctokit(core.getInput('token'));
 
 		const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
+		core.info(core.getInput('labels'));
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
+
+		const sectionLabels = {
+			'breaking change': 'Breaking changes',
+			'bug': 'Bugs',
+			'enhancement': 'Enhancements',
+			'-': 'Others'
+		};
+
+		const sections = {
+			'_default': [],
+		};
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -53,21 +73,50 @@ async function run() {
 			commits = commits.filter(({title}) => !regex.test(title));
 		}
 
+		// Separate commits out into sections, based on label of PR
+		if (Object.keys(sectionLabels).length > 0 && commits.length > 0) {
+			Object.keys(sectionLabels).map(labelId => sections[labelId] = []);
+
+			for (commit of commits) {
+				let organized = false;
+				const matches = commit.title.match(/(?<=\(#)[1-9]\d*(?=\))/g);
+				if (matches.length > 0) {
+					const prResponse = octokit.pulls.get({
+						owner,
+						repo,
+						pull_number: matches[0],
+					}).labels;
+
+					for (const prLabel of prResponse.labels) {
+						if (prLabel in sections) {
+							sections[prLabel.name].push(formatCommit(commit, commitTemplate, repoURL));
+							organized = true;
+							break;
+						}
+					}
+				}
+
+				if (!organized) {
+					(sections['-'] || sections['_default']).push(formatCommit(commit, commitTemplate, repoURL));
+				}
+			}
+		}
+
 		// Generate markdown content
 		const commitEntries = [];
 		if (commits.length === 0) {
 			commitEntries.push('_Maintenance release_');
 		} else {
-			for (const {hash, title} of commits) {
-				const line = commitTemplate
-					.replace('{hash}', hash)
-					.replace('{title}', title)
-					.replace('{url}', repoURL + '/commit/' + hash);
-				commitEntries.push(line);
+			if (sections['_default'].length > 0) {
+				commitEntries.push(sections['_default'].join('\n')); // Body without any sections
+			} else {
+				for (const labelId in sections) {
+					commitEntries.push(`### ${sectionLabels[labelId]}`); // Title of section based on name
+					commitEntries.push(sections[labelId].join('\n')); // Body of that section
+				}
 			}
 		}
 
-		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,

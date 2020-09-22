@@ -26,6 +26,9 @@ inputs:
     description: Markdown template for each commit entry in release notes
     required: false
     default: '- {hash} {title}'
+  labels:
+    required: false
+    default: ''
 runs:
   using: 'node12'
   main: 'distribution/index.js'
