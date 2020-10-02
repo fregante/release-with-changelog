@@ -92,6 +92,19 @@ Specific tag to generate changelog against.
 
 None.
 
+## "Release notes for previous tags/releases
+
+If you already have tags/releases without release notes, delete the empty releases (**not the tags**) and use [vercel/release](https://github.com/vercel/release) to create the release notes for those tags:
+
+```sh
+# Unsaved changes might be lost. Push your changes to GitHub before running this
+npm install release -g
+for tag in $(git tag); do
+	git checkout $tag && release;
+done
+git checkout origin/master
+```
+
 ## License
 
 [MIT](./license)
