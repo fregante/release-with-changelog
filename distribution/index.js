@@ -230,6 +230,8 @@ const core = __webpack_require__(470);
 const util = __webpack_require__(669);
 const execFile = util.promisify(__webpack_require__(129).execFile);
 
+const defaultExcludesPattern = '^Meta|^Document|^Readme|readme$|^Lint|^Refactor|^Update.+dependencies$|^v?\\d+\\.\\d+\\.\\d+$';
+
 async function run() {
 	try {
 		const {owner, repo} = context.repo;
@@ -238,7 +240,7 @@ async function run() {
 
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
-		const exclude = core.getInput('exclude');
+		const excludesPattern = core.getInput('exclude');
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -275,9 +277,9 @@ async function run() {
 			title: line.slice(40)
 		}));
 
-		if (exclude) {
-			const regex = new RegExp(exclude);
-			commits = commits.filter(({title}) => !regex.test(title));
+		if (excludesPattern) {
+			const excludeCommitRegex = new RegExp(excludesPattern === 'true' ? defaultExcludesPattern : excludesPattern);
+			commits = commits.filter(({title}) => !excludeCommitRegex.test(title));
 		}
 
 		// Generate markdown content
