@@ -229,12 +229,11 @@ const {getOctokit, context} = __webpack_require__(469);
 const core = __webpack_require__(470);
 const util = __webpack_require__(669);
 const execFile = util.promisify(__webpack_require__(129).execFile);
+const {generateReleaseNotes} = __webpack_require__(353);
 
 async function run() {
 	try {
 		const {owner, repo} = context.repo;
-
-		const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
@@ -268,40 +267,12 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
-		// Get commits between computed range
-		let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
-		commits = commits.split('\n').filter(Boolean).map(line => ({
-			hash: line.slice(0, 8),
-			title: line.slice(40)
-		}));
-
-		if (exclude) {
-			const regex = new RegExp(exclude);
-			commits = commits.filter(({title}) => !regex.test(title));
-		}
-
-		// Generate markdown content
-		const commitEntries = [];
-		if (commits.length === 0) {
-			commitEntries.push('_Maintenance release_');
-		} else {
-			for (const {hash, title} of commits) {
-				const line = commitTemplate
-					.replace('{hash}', hash)
-					.replace('{title}', title)
-					.replace('{url}', repoURL + '/commit/' + hash);
-				commitEntries.push(line);
-			}
-		}
-
 		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: releaseTemplate
-				.replace('{commits}', commitEntries.join('\n'))
-				.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`),
+			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate}),
 			draft: false,
 			prerelease: false
 		});
@@ -879,6 +850,55 @@ paginateRest.VERSION = VERSION;
 
 exports.paginateRest = paginateRest;
 //# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 353:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+const util = __webpack_require__(669);
+const execFile = util.promisify(__webpack_require__(129).execFile);
+
+const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
+
+async function generateReleaseNotes({
+	range,
+	exclude = '',
+	commitTemplate = '- {hash} {title}',
+	releaseTemplate = '{commits}\n\n{range}'
+}) {
+	// Get commits between computed range
+	let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
+	commits = commits.split('\n').filter(Boolean).map(line => ({
+		hash: line.slice(0, 8),
+		title: line.slice(40)
+	}));
+
+	if (exclude) {
+		const regex = new RegExp(exclude);
+		commits = commits.filter(({title}) => !regex.test(title));
+	}
+
+	const commitEntries = [];
+	if (commits.length === 0) {
+		commitEntries.push('_Maintenance release_');
+	} else {
+		for (const {hash, title} of commits) {
+			const line = commitTemplate
+				.replace('{hash}', hash)
+				.replace('{title}', title)
+				.replace('{url}', repoURL + '/commit/' + hash);
+			commitEntries.push(line);
+		}
+	}
+
+	return releaseTemplate
+		.replace('{commits}', commitEntries.join('\n'))
+		.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`)
+}
+
+exports.generateReleaseNotes = generateReleaseNotes;
 
 
 /***/ }),

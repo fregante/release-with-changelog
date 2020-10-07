@@ -36,7 +36,7 @@ async function generateReleaseNotes({
 
 	return releaseTemplate
 		.replace('{commits}', commitEntries.join('\n'))
-		.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`)
+		.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`);
 }
 
 exports.generateReleaseNotes = generateReleaseNotes;

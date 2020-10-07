@@ -12,7 +12,7 @@ childProcess.execFile.mockImplementation((file, args, callback) => callback('', 
 		'1234abcd1234abcd1234abcd1234abcd1234abcdMeta: add `title-to-labels-action` to clean up issue titles',
 		'1234abcd1234abcd1234abcd1234abcd1234abcdFix padding issue in Milestones',
 		'1234abcd1234abcd1234abcd1234abcd1234abcdLint (#3602)',
-		'1234abcd1234abcd1234abcd1234abcd1234abcdRefactor `conversation-links-on-repo-list` to use `selector-observer` (#3514)',
+		'1234abcd1234abcd1234abcd1234abcd1234abcdRefactor `conversation-links-on-repo-list` to use `selector-observer` (#3514)'
 	].join('\n')
 }));
 
@@ -28,7 +28,7 @@ test('generates changelog using default options', async () => {
 		'- 1234abcd Lint (#3602)',
 		'- 1234abcd Refactor `conversation-links-on-repo-list` to use `selector-observer` (#3514)',
 		'',
-		'[`' + range + '`](https://github.com/test/test/compare/' + range +')'
+		'[`' + range + '`](https://github.com/test/test/compare/' + range + ')'
 	].join('\n'));
 });
 
@@ -73,7 +73,7 @@ test('generates changelog with custom commit template', async () => {
 		'- Meta: add `title-to-labels-action` to clean up issue titles',
 		'- Fix padding issue in Milestones',
 		'- Lint (#3602)',
-		'- Refactor `conversation-links-on-repo-list` to use `selector-observer` (#3514)',
+		'- Refactor `conversation-links-on-repo-list` to use `selector-observer` (#3514)'
 	].join('\n'));
 });
 
@@ -89,6 +89,6 @@ test('generates changelog with custom exclude', async () => {
 		'- Update dependencies (#14)',
 		'- Enable `bypass-checks` on more commit statuses (#3610)',
 		'- Add tooltip to `table-input` button (#3615)',
-		'- Fix padding issue in Milestones',
+		'- Fix padding issue in Milestones'
 	].join('\n'));
 });
