@@ -232,57 +232,59 @@ const execFile = util.promisify(__webpack_require__(129).execFile);
 const {generateReleaseNotes} = __webpack_require__(353);
 
 async function run() {
-	const {owner, repo} = context.repo;
+	try {
+		const {owner, repo} = context.repo;
 
-	const releaseTemplate = core.getInput('template');
-	const commitTemplate = core.getInput('commit-template');
-	const exclude = core.getInput('exclude');
+		const releaseTemplate = core.getInput('template');
+		const commitTemplate = core.getInput('commit-template');
+		const exclude = core.getInput('exclude');
 
-	// Fetch tags from remote
-	await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
+		// Fetch tags from remote
+		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
 
-	// Get all tags, sorted by recently created tags
-	const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
-	const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
+		// Get all tags, sorted by recently created tags
+		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
+		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
-	if (tags.length === 0) {
-		core.info('There is nothing to be done here. Exiting!');
-		return;
+		if (tags.length === 0) {
+			core.info('There is nothing to be done here. Exiting!');
+			return;
+		}
+
+		let pushedTag = core.getInput('tag') || tags[0];
+
+		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
+			pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
+			core.info('Using pushed tag as reference: ' + pushedTag);
+		}
+
+		// Get range to generate diff
+		let range = tags[1] + '..' + pushedTag;
+		if (tags.length < 2) {
+			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
+			range = rootCommit.trim('') + '..' + pushedTag;
+		}
+
+		core.info('Computed range: ' + range);
+
+		// Create a release with markdown content in body
+		const octokit = getOctokit(core.getInput('token'));
+		const createReleaseResponse = await octokit.repos.createRelease({
+			repo,
+			owner,
+			tag_name: pushedTag, // eslint-disable-line camelcase
+			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate}),
+			draft: false,
+			prerelease: false
+		});
+
+		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
+	} catch (error) {
+		core.setFailed(error.message);
 	}
-
-	let pushedTag = core.getInput('tag') || tags[0];
-
-	if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
-		pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
-		core.info('Using pushed tag as reference: ' + pushedTag);
-	}
-
-	// Get range to generate diff
-	let range = tags[1] + '..' + pushedTag;
-	if (tags.length < 2) {
-		const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
-		range = rootCommit.trim('') + '..' + pushedTag;
-	}
-
-	core.info('Computed range: ' + range);
-
-	// Create a release with markdown content in body
-	const octokit = getOctokit(core.getInput('token'));
-	const createReleaseResponse = await octokit.repos.createRelease({
-		repo,
-		owner,
-		tag_name: pushedTag, // eslint-disable-line camelcase
-		body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate}),
-		draft: false,
-		prerelease: false
-	});
-
-	core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
 }
 
-run().catch(error => {
-	core.setFailed(error.message);
-});
+run();
 
 
 /***/ }),
