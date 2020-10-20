@@ -3,7 +3,7 @@ const execFile = util.promisify(require('child_process').execFile);
 
 const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
-const excludePreset = /^meta|^document|^lint|^refactor|readme|dependencies|^\d\.\d\.\d/i;
+const excludePreset = /^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
 
 async function generateReleaseNotes({
 	range,
