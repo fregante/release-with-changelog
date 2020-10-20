@@ -1,34 +1,40 @@
 {
-  "name": "release-with-changelog",
-  "version": "1.0.0",
-  "description": "Create a GitHub relase with changelog for every tag you push",
-  "main": "distribution/index.js",
-  "scripts": {
-    "package": "ncc build index.js -o distribution",
-    "test": "xo"
-  },
-  "repository": "notlmn/release-with-changelog",
-  "keywords": [
-    "github",
-    "actions",
-    "javascript",
-    "tags",
-    "releases",
-    "changelog"
-  ],
-  "author": "Laxman Damera",
-  "license": "MIT",
-  "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0"
-  },
-  "devDependencies": {
-    "@zeit/ncc": "^0.22.3",
-    "xo": "^0.32.1"
-  },
-  "xo": {
-    "ignore": [
-      "distribution"
-    ]
-  }
+	"name": "release-with-changelog",
+	"version": "1.0.0",
+	"description": "Create a GitHub relase with changelog for every tag you push",
+	"main": "distribution/index.js",
+	"scripts": {
+		"package": "ncc build index.js -o distribution",
+		"test": "xo && npm run jest",
+		"jest": "GITHUB_SERVER_URL='https://github.com' GITHUB_REPOSITORY='test/test' jest"
+	},
+	"repository": "notlmn/release-with-changelog",
+	"keywords": [
+		"github",
+		"actions",
+		"javascript",
+		"tags",
+		"releases",
+		"changelog"
+	],
+	"author": "Laxman Damera",
+	"license": "MIT",
+	"dependencies": {
+		"@actions/core": "^1.2.6",
+		"@actions/github": "^4.0.0"
+	},
+	"devDependencies": {
+		"@zeit/ncc": "^0.22.3",
+		"jest": "^26.5.3",
+		"strip-indent": "^3.0.0",
+		"xo": "^0.32.1"
+	},
+	"xo": {
+		"envs": [
+			"jest"
+		],
+		"ignore": [
+			"distribution"
+		]
+	}
 }

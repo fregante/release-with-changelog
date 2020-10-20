@@ -2,12 +2,11 @@ const {getOctokit, context} = require('@actions/github');
 const core = require('@actions/core');
 const util = require('util');
 const execFile = util.promisify(require('child_process').execFile);
+const {generateReleaseNotes} = require('./generate-release-notes');
 
 async function run() {
 	try {
 		const {owner, repo} = context.repo;
-
-		const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
@@ -41,40 +40,13 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
-		// Get commits between computed range
-		let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
-		commits = commits.split('\n').filter(Boolean).map(line => ({
-			hash: line.slice(0, 8),
-			title: line.slice(40)
-		}));
-
-		if (exclude) {
-			const regex = new RegExp(exclude);
-			commits = commits.filter(({title}) => !regex.test(title));
-		}
-
-		// Generate markdown content
-		const commitEntries = [];
-		if (commits.length === 0) {
-			commitEntries.push('_Maintenance release_');
-		} else {
-			for (const {hash, title} of commits) {
-				const line = commitTemplate
-					.replace('{hash}', hash)
-					.replace('{title}', title)
-					.replace('{url}', repoURL + '/commit/' + hash);
-				commitEntries.push(line);
-			}
-		}
-
+		// Create a release with markdown content in body
 		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: releaseTemplate
-				.replace('{commits}', commitEntries.join('\n'))
-				.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`),
+			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate}),
 			draft: false,
 			prerelease: false
 		});
