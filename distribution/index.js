@@ -863,6 +863,8 @@ const execFile = util.promisify(__webpack_require__(129).execFile);
 
 const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
+const excludePreset = /^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
+
 async function generateReleaseNotes({
 	range,
 	exclude = '',
@@ -877,7 +879,8 @@ async function generateReleaseNotes({
 	}));
 
 	if (exclude) {
-		const regex = new RegExp(exclude);
+		// Booleans aren't currently supported: https://github.com/actions/toolkit/issues/361
+		const regex = exclude === 'true' || exclude === true ? excludePreset : new RegExp(exclude);
 		commits = commits.filter(({title}) => !regex.test(title));
 	}
 

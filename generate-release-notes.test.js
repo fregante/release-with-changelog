@@ -94,3 +94,18 @@ test('generates changelog with custom exclude', async () => {
 		- Fix padding issue in Milestones
 	`));
 });
+
+test('generates changelog with exclude preset', async () => {
+	const output = await generateReleaseNotes({
+		range,
+		commitTemplate: '- {title}',
+		releaseTemplate: '{commits}',
+		exclude: 'true'
+	});
+
+	expect(output).toEqual(dedent(`
+		- Enable \`bypass-checks\` on more commit statuses (#3610)
+		- Add tooltip to \`table-input\` button (#3615)
+		- Fix padding issue in Milestones
+	`));
+});

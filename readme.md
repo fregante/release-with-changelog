@@ -78,9 +78,12 @@ Markdown template for each commit entry in release notes. Available replacements
 ### exclude
 
 Default: `''` <br>
-Example: `'^Meta:'`
+Example: `'^Meta:'` <br>
+Example: `true`
 
 Regex to exclude commits based on their title (don't include the initial and final `/`).
+
+Setting this to `true` will enable the default preset, which may change over time, but is currently: `/^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i`
 
 ### tag
 
