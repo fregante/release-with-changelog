@@ -95,7 +95,7 @@ Specific tag to generate changelog against.
 
 None.
 
-## "Release notes for previous tags/releases
+## Release notes for previous tags/releases
 
 If you already have tags/releases without release notes, delete the empty releases (**not the tags**) and use [vercel/release](https://github.com/vercel/release) to create the release notes for those tags:
 
