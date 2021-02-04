@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 50
-    - uses: notlmn/release-with-changelog@v3
+    - uses: fregante/release-with-changelog@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -26,7 +26,7 @@ jobs:
 Or you can customize it further:
 
 ``` yml
-    - uses: notlmn/release-with-changelog@v3
+    - uses: fregante/release-with-changelog@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         exclude: '^Meta'
