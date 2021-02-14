@@ -238,6 +238,8 @@ async function run() {
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
+		let dateFormat = core.getInput('date-format');
+		dateFormat = ['relative', 'local', 'default', 'iso', 'rfc', 'short', 'raw'].includes(dateFormat) ? ('--date=' + dateFormat) : ('--date=format:' + dateFormat)
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -273,7 +275,7 @@ async function run() {
 			repo,
 			owner,
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate}),
+			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat}),
 			draft: false,
 			prerelease: false
 		});
@@ -869,13 +871,16 @@ async function generateReleaseNotes({
 	range,
 	exclude = '',
 	commitTemplate = '- {hash} {title}',
-	releaseTemplate = '{commits}\n\n{range}'
+	releaseTemplate = '{commits}\n\n{range}',
+	dateFormat
 }) {
+
 	// Get commits between computed range
-	let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
+	let {stdout: commits} = await execFile('git', ['log', '--format=%H%ad%s', dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => ({
 		hash: line.slice(0, 8),
-		title: line.slice(40)
+		date: line.slice(40, 50),
+		title: line.slice(50)
 	}));
 
 	if (exclude) {
@@ -888,11 +893,12 @@ async function generateReleaseNotes({
 	if (commits.length === 0) {
 		commitEntries.push('_Maintenance release_');
 	} else {
-		for (const {hash, title} of commits) {
+		for (const {hash, date, title} of commits) {
 			const line = commitTemplate
 				.replace('{hash}', hash)
 				.replace('{title}', title)
-				.replace('{url}', repoURL + '/commit/' + hash);
+				.replace('{url}', repoURL + '/commit/' + hash)
+				.replace('{date}', '[' + date + '](' + repoURL + '/commit/' + hash + ')');
 			commitEntries.push(line);
 		}
 	}
