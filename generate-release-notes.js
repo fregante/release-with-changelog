@@ -9,13 +9,15 @@ async function generateReleaseNotes({
 	range,
 	exclude = '',
 	commitTemplate = '- {hash} {title}',
-	releaseTemplate = '{commits}\n\n{range}'
+	releaseTemplate = '{commits}\n\n{range}',
+	dateFormat = '--date=short'
 }) {
 	// Get commits between computed range
-	let {stdout: commits} = await execFile('git', ['log', '--format=%H%s', range]);
+	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => ({
-		hash: line.slice(0, 8),
-		title: line.slice(40)
+		hash: line.split('¬')[0].slice(0, 8),
+		date: line.split('¬')[1],
+		title: line.split('¬')[2]
 	}));
 
 	if (exclude) {
@@ -28,11 +30,12 @@ async function generateReleaseNotes({
 	if (commits.length === 0) {
 		commitEntries.push('_Maintenance release_');
 	} else {
-		for (const {hash, title} of commits) {
+		for (const {hash, date, title} of commits) {
 			const line = commitTemplate
 				.replace('{hash}', hash)
 				.replace('{title}', title)
-				.replace('{url}', repoURL + '/commit/' + hash);
+				.replace('{url}', repoURL + '/commit/' + hash)
+				.replace('{date}', '[' + date + '](' + repoURL + '/commit/' + hash + ')');
 			commitEntries.push(line);
 		}
 	}

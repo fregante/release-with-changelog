@@ -1,26 +1,19 @@
 name: 'Release with Changelog'
-
 branding:
   icon: 'tag'
   color: 'purple'
-
 description: 'Create a GitHub relase with changelog for every tag you push'
-
-
 inputs:
   tag:
     description: Specific tag to generate changelog against
     required: false
-
   token:
     description: Personal access token (PAT) used to create releases
     required: true
-
   exclude:
     description: Regex to exclude commits based on their title (don't include the initial and final `/`)
     required: false
     default: ''
-
   template:
     description: Markdown template to be included in release notes
     required: false
@@ -28,18 +21,14 @@ inputs:
       {commits}
 
       {range}
-
   commit-template:
     description: Markdown template for each commit entry in release notes
     required: false
     default: '- {hash} {title}'
-
   date-format:
     description: Format of git date included in commit-template
     required: false
     default: 'short'
-
-
 runs:
   using: 'node12'
   main: 'distribution/index.js'

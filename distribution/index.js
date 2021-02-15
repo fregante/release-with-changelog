@@ -239,7 +239,7 @@ async function run() {
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
 		let dateFormat = core.getInput('date-format');
-		dateFormat = ['relative', 'local', 'default', 'iso', 'rfc', 'short', 'raw'].includes(dateFormat) ? ('--date=' + dateFormat) : ('--date=format:' + dateFormat)
+		dateFormat = ['relative', 'local', 'default', 'iso', 'rfc', 'short', 'raw'].includes(dateFormat) ? ('--date=' + dateFormat) : ('--date=format:' + dateFormat);
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -872,15 +872,14 @@ async function generateReleaseNotes({
 	exclude = '',
 	commitTemplate = '- {hash} {title}',
 	releaseTemplate = '{commits}\n\n{range}',
-	dateFormat
+	dateFormat = '--date=short'
 }) {
-
 	// Get commits between computed range
-	let {stdout: commits} = await execFile('git', ['log', '--format=%H%ad%s', dateFormat, range]);
+	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => ({
-		hash: line.slice(0, 8),
-		date: line.slice(40, 50),
-		title: line.slice(50)
+		hash: line.split('¬')[0].slice(0, 8),
+		date: line.split('¬')[1],
+		title: line.split('¬')[2]
 	}));
 
 	if (exclude) {
