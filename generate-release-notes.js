@@ -15,7 +15,7 @@ async function generateReleaseNotes({
 	// Get commits between computed range
 	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => {
-		let [hash, date, title] = line.split('¬');
+		const [hash, date, title] = line.split('¬');
 		return {
 			hash: hash.slice(0, 8),
 			date,
