@@ -14,11 +14,10 @@ async function generateReleaseNotes({
 }) {
 	// Get commits between computed range
 	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', dateFormat, range]);
-	commits = commits.split('\n').filter(Boolean).map(line => ({
-		hash: line.split('¬')[0].slice(0, 8),
-		date: line.split('¬')[1],
-		title: line.split('¬')[2]
-	}));
+	commits = commits.split('\n').filter(Boolean).map(line => {
+		var [hash, date, title] = line.split('¬');
+		hash = hash.slice(0, 8)
+	});
 
 	if (exclude) {
 		// Booleans aren't currently supported: https://github.com/actions/toolkit/issues/361
@@ -35,7 +34,7 @@ async function generateReleaseNotes({
 				.replace('{hash}', hash)
 				.replace('{title}', title)
 				.replace('{url}', repoURL + '/commit/' + hash)
-				.replace('{date}', '[' + date + '](' + repoURL + '/commit/' + hash + ')');
+				.replace('{date}', date);
 			commitEntries.push(line);
 		}
 	}

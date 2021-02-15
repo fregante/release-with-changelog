@@ -1,4 +1,4 @@
-# Release with changelog
+# release-with-changelog
 
 <img src="./media/releases.png" align="right" width="400">
 
@@ -74,7 +74,7 @@ Markdown template for each commit entry in release notes. Available replacements
 - `{title}` A single line title of the commit.
 - `{hash}` Abbreviated commit hash, gets linkified automatically in release notes.
 - `{url}` Plain link to commit on GitHub.
-- `{date}` Date of commit, gets linkified automatically to commit, could be specified in [`date-format`](#date-format) below.
+- `{date}` Date of commit, could be specified in [`date-format`](#date-format) below.
 
 ### exclude
 
@@ -98,7 +98,7 @@ Default: `short` <br>
 Example: `local` <br>
 Example: `%d.%m.%Y`
 
-Format of `{date}` replacement. More info can be found in [StackOverflow answer](https://stackoverflow.com/questions/7853332/#34778736).
+Format of `{date}` replacement as used by [git log --date](https://git-scm.com/docs/git-log#Documentation/git-log.txt---dateltformatgt), as either a keyword or a `strftime` string. More info can be found in [StackOverflow answer](https://stackoverflow.com/questions/7853332/#34778736).
 
 ## Outputs
 
