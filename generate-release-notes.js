@@ -10,10 +10,10 @@ async function generateReleaseNotes({
 	exclude = '',
 	commitTemplate = '- {hash} {title}',
 	releaseTemplate = '{commits}\n\n{range}',
-	dateFormat = '--date=short'
+	dateFormat = 'short'
 }) {
 	// Get commits between computed range
-	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', dateFormat, range]);
+	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => {
 		const [hash, date, title] = line.split('¬');
 		return {

@@ -131,9 +131,9 @@ test('generates changelog with date presets', async () => {
 test('generates changelog with custom date presets', async () => {
 	const output = await generateReleaseNotes({
 		range,
-		dateFormat: '--date=format:%d.%m.%Y',
 		commitTemplate: '- {date} {title}',
-		releaseTemplate: '{commits}'
+		releaseTemplate: '{commits}',
+		dateFormat: '%d.%m.%Y'
 	});
 
 	expect(output).toEqual(dedent(`
