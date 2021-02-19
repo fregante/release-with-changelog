@@ -1,36 +1,22 @@
-const childProcess = require('child_process');
 const stripIndent = require('strip-indent');
 const {generateReleaseNotes} = require('./generate-release-notes');
 
 const dedent = string => stripIndent(string).trim();
-const range = '1234abcd..1234abcd';
-
-jest.mock('child_process');
-childProcess.execFile.mockImplementation((file, args, callback) => callback('', {
-	stdout: dedent(`
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-10-07¬Update dependencies (#14)
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-10-06¬Enable \`bypass-checks\` on more commit statuses (#3610)
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-10-05¬Add tooltip to \`table-input\` button (#3615)
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-10-04¬Meta: add \`title-to-labels-action\` to clean up issue titles
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-10-01¬Fix padding issue in Milestones
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-09-30¬Lint (#3602)
-		1234abcd1234abcd1234abcd1234abcd1234abcd¬2020-09-24¬Refactor \`conversation-links-on-repo-list\` to use \`selector-observer\` (#3514)
-	`)
-}));
+const range = 'v3.0.0..v3.1.0';
 
 test('generates changelog using default options', async () => {
 	const output = await generateReleaseNotes({range});
 
 	expect(output).toEqual(dedent(`
-		- 1234abcd Update dependencies (#14)
-		- 1234abcd Enable \`bypass-checks\` on more commit statuses (#3610)
-		- 1234abcd Add tooltip to \`table-input\` button (#3615)
-		- 1234abcd Meta: add \`title-to-labels-action\` to clean up issue titles
-		- 1234abcd Fix padding issue in Milestones
-		- 1234abcd Lint (#3602)
-		- 1234abcd Refactor \`conversation-links-on-repo-list\` to use \`selector-observer\` (#3514)
+		- f9cec2b2 Add support for \`exclude: true\` (#23)
+		- 8d79eb1a Meta: Add tests using jest (#22)
+		- 71ec95ec Meta: update self workflow (#16)
+		- a74ce6a1 Meta: Document how to add changelogs to old tags (#15)
+		- bfe14281 Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- a6eb5131 Readme: make first example bare-bones (#18)
+		- 850de175 Meta: Update readme example to v3
 
-		[\`${range}\`](https://github.com/test/test/compare/${range})
+		[\`v3.0.0..v3.1.0\`](https://github.com/fregante/release-with-changelog/compare/v3.0.0..v3.1.0)
 	`));
 });
 
@@ -49,13 +35,13 @@ test('generates changelog with custom release template', async () => {
 	expect(output).toEqual(dedent(`
 		### Changelog
 
-		- 1234abcd Update dependencies (#14)
-		- 1234abcd Enable \`bypass-checks\` on more commit statuses (#3610)
-		- 1234abcd Add tooltip to \`table-input\` button (#3615)
-		- 1234abcd Meta: add \`title-to-labels-action\` to clean up issue titles
-		- 1234abcd Fix padding issue in Milestones
-		- 1234abcd Lint (#3602)
-		- 1234abcd Refactor \`conversation-links-on-repo-list\` to use \`selector-observer\` (#3514)
+		- f9cec2b2 Add support for \`exclude: true\` (#23)
+		- 8d79eb1a Meta: Add tests using jest (#22)
+		- 71ec95ec Meta: update self workflow (#16)
+		- a74ce6a1 Meta: Document how to add changelogs to old tags (#15)
+		- bfe14281 Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- a6eb5131 Readme: make first example bare-bones (#18)
+		- 850de175 Meta: Update readme example to v3
 
 		❤
 	`));
@@ -69,13 +55,13 @@ test('generates changelog with custom commit template', async () => {
 	});
 
 	expect(output).toEqual(dedent(`
-		- Update dependencies (#14)
-		- Enable \`bypass-checks\` on more commit statuses (#3610)
-		- Add tooltip to \`table-input\` button (#3615)
-		- Meta: add \`title-to-labels-action\` to clean up issue titles
-		- Fix padding issue in Milestones
-		- Lint (#3602)
-		- Refactor \`conversation-links-on-repo-list\` to use \`selector-observer\` (#3514)
+		- Add support for \`exclude: true\` (#23)
+		- Meta: Add tests using jest (#22)
+		- Meta: update self workflow (#16)
+		- Meta: Document how to add changelogs to old tags (#15)
+		- Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- Readme: make first example bare-bones (#18)
+		- Meta: Update readme example to v3
 	`));
 });
 
@@ -88,10 +74,9 @@ test('generates changelog with custom exclude', async () => {
 	});
 
 	expect(output).toEqual(dedent(`
-		- Update dependencies (#14)
-		- Enable \`bypass-checks\` on more commit statuses (#3610)
-		- Add tooltip to \`table-input\` button (#3615)
-		- Fix padding issue in Milestones
+		- Add support for \`exclude: true\` (#23)
+		- Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- Readme: make first example bare-bones (#18)
 	`));
 });
 
@@ -104,9 +89,8 @@ test('generates changelog with exclude preset', async () => {
 	});
 
 	expect(output).toEqual(dedent(`
-		- Enable \`bypass-checks\` on more commit statuses (#3610)
-		- Add tooltip to \`table-input\` button (#3615)
-		- Fix padding issue in Milestones
+		- Add support for \`exclude: true\` (#23)
+		- Bump @actions/core from 1.2.4 to 1.2.6 (#19)
 	`));
 });
 
@@ -118,13 +102,13 @@ test('generates changelog with date presets', async () => {
 	});
 
 	expect(output).toEqual(dedent(`
-	- 2020-10-07 Update dependencies (#14)
-	- 2020-10-06 Enable \`bypass-checks\` on more commit statuses (#3610)
-	- 2020-10-05 Add tooltip to \`table-input\` button (#3615)
-	- 2020-10-04 Meta: add \`title-to-labels-action\` to clean up issue titles
-	- 2020-10-01 Fix padding issue in Milestones
-	- 2020-09-30 Lint (#3602)
-	- 2020-09-24 Refactor \`conversation-links-on-repo-list\` to use \`selector-observer\` (#3514)
+		- 2020-10-21 Add support for \`exclude: true\` (#23)
+		- 2020-10-20 Meta: Add tests using jest (#22)
+		- 2020-10-02 Meta: update self workflow (#16)
+		- 2020-10-02 Meta: Document how to add changelogs to old tags (#15)
+		- 2020-10-02 Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- 2020-09-22 Readme: make first example bare-bones (#18)
+		- 2020-09-18 Meta: Update readme example to v3
 	`));
 });
 
@@ -137,12 +121,12 @@ test('generates changelog with custom date presets', async () => {
 	});
 
 	expect(output).toEqual(dedent(`
-	- 07.10.2020 Update dependencies (#14)
-	- 06.10.2020 Enable \`bypass-checks\` on more commit statuses (#3610)
-	- 05.10.2020 Add tooltip to \`table-input\` button (#3615)
-	- 04.10.2020 Meta: add \`title-to-labels-action\` to clean up issue titles
-	- 01.10.2020 Fix padding issue in Milestones
-	- 30.09.2020 Lint (#3602)
-	- 24.09.2020 Refactor \`conversation-links-on-repo-list\` to use \`selector-observer\` (#3514)
+		- 21.10.2020 Add support for \`exclude: true\` (#23)
+		- 20.10.2020 Meta: Add tests using jest (#22)
+		- 02.10.2020 Meta: update self workflow (#16)
+		- 02.10.2020 Meta: Document how to add changelogs to old tags (#15)
+		- 02.10.2020 Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- 22.09.2020 Readme: make first example bare-bones (#18)
+		- 18.09.2020 Meta: Update readme example to v3
 	`));
 });

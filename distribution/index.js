@@ -238,8 +238,7 @@ async function run() {
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
-		let dateFormat = core.getInput('date-format');
-		dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
+		const dateFormat = core.getInput('date-format');
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -874,6 +873,7 @@ async function generateReleaseNotes({
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short'
 }) {
+	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
 	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => {

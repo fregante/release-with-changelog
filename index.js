@@ -11,8 +11,7 @@ async function run() {
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
-		let dateFormat = core.getInput('date-format');
-		dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
+		const dateFormat = core.getInput('date-format');
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);

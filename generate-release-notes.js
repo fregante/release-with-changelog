@@ -12,6 +12,7 @@ async function generateReleaseNotes({
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short'
 }) {
+	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
 	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => {
