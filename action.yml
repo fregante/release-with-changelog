@@ -1,5 +1,4 @@
 name: 'Release with Changelog'
-icon: 'tag'
 branding:
   icon: 'tag'
   color: 'purple'
@@ -26,6 +25,10 @@ inputs:
     description: Markdown template for each commit entry in release notes
     required: false
     default: '- {hash} {title}'
+  date-format:
+    description: Format of git date included in commit-template
+    required: false
+    default: 'short'
 runs:
   using: 'node12'
   main: 'distribution/index.js'

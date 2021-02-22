@@ -11,6 +11,7 @@ async function run() {
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
+		const dateFormat = core.getInput('date-format');
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -46,7 +47,7 @@ async function run() {
 			repo,
 			owner,
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate}),
+			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat}),
 			draft: false,
 			prerelease: false
 		});

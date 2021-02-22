@@ -6,9 +6,9 @@
 	"scripts": {
 		"package": "ncc build index.js -o distribution",
 		"test": "xo && npm run jest",
-		"jest": "GITHUB_SERVER_URL='https://github.com' GITHUB_REPOSITORY='test/test' jest"
+		"jest": "GITHUB_SERVER_URL='https://github.com' GITHUB_REPOSITORY='fregante/release-with-changelog' jest"
 	},
-	"repository": "notlmn/release-with-changelog",
+	"repository": "fregante/release-with-changelog",
 	"keywords": [
 		"github",
 		"actions",
