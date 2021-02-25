@@ -4,7 +4,7 @@
 	"description": "Create a GitHub relase with changelog for every tag you push",
 	"main": "distribution/index.js",
 	"scripts": {
-		"package": "ncc build index.js -o distribution",
+		"build": "ncc build index.js -o distribution",
 		"test": "xo && npm run jest",
 		"jest": "GITHUB_SERVER_URL='https://github.com' GITHUB_REPOSITORY='fregante/release-with-changelog' jest"
 	},
