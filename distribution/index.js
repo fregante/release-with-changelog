@@ -898,9 +898,9 @@ async function generateReleaseNotes({
 		for (const {hash, date, title} of commits) {
 			const line = commitTemplate
 				.replace('{hash}', hash)
-				.replace('{title}', title)
 				.replace('{url}', repoURL + '/commit/' + hash)
-				.replace('{date}', date);
+				.replace('{date}', date)
+				.replace('{title}', title);
 			commitEntries.push(line);
 		}
 	}
