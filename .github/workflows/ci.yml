@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install
+        run: npm ci || npm install
+      - name: XO
+        run: npx xo
+
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: install
+        run: npm ci || npm install
+      - name: Jest
+        run: npm run jest
+
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install
+        run: npm ci || npm install
+      - name: build
+        run: npm run build
