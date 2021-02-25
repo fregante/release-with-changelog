@@ -130,3 +130,15 @@ test('generates changelog with custom date presets', async () => {
 		- 18.09.2020 Meta: Update readme example to v3
 	`));
 });
+
+test('ensure that replacements aren’t applied in commit titles', async () => {
+	const output = await generateReleaseNotes({
+		range: 'v3.1.0...v3.2.0',
+		commitTemplate: '- {date} {title}',
+		releaseTemplate: '{commits}',
+	});
+
+	expect(output).toEqual(dedent(`
+		to be filled
+	`));
+});
