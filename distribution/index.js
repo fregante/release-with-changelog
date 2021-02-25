@@ -864,7 +864,7 @@ const execFile = util.promisify(__webpack_require__(129).execFile);
 
 const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
 
-const excludePreset = /^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
+const excludePreset = /^bump |^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
 
 async function generateReleaseNotes({
 	range,

@@ -90,7 +90,6 @@ test('generates changelog with exclude preset', async () => {
 
 	expect(output).toEqual(dedent(`
 		- Add support for \`exclude: true\` (#23)
-		- Bump @actions/core from 1.2.4 to 1.2.6 (#19)
 	`));
 });
 
