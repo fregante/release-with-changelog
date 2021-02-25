@@ -25,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@zeit/ncc": "^0.22.3",
+		"auto-changelog": "^2.2.1",
 		"jest": "^26.5.3",
 		"strip-indent": "^3.0.0",
 		"xo": "^0.32.1"
