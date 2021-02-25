@@ -51,6 +51,14 @@ The action expects you to do a deep clone of the repository using `actions/check
 
 Required: [Personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) used to create releases.
 
+### title
+
+Default: `{tag}`
+
+Title for created release. Available replacements:
+
+- `{tag}` Latest tag available.
+
 ### template
 
 Default:

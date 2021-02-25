@@ -8,6 +8,7 @@ async function run() {
 	try {
 		const {owner, repo} = context.repo;
 
+		let releaseTitle = core.getInput('title');
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
@@ -41,11 +42,15 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
+		// Replace {tag} with pushedTag
+		releaseTitle = releaseTitle.replace('{tag}', pushedTag);
+
 		// Create a release with markdown content in body
 		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
+			name: releaseTitle,
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat}),
 			draft: false,
