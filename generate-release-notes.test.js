@@ -133,12 +133,16 @@ test('generates changelog with custom date presets', async () => {
 
 test('ensure that replacements aren’t applied in commit titles', async () => {
 	const output = await generateReleaseNotes({
-		range: 'v3.1.0...v3.2.0',
+		range: 'v3.1.0..v3.2.0',
 		commitTemplate: '- {date} {title}',
-		releaseTemplate: '{commits}',
+		releaseTemplate: '{commits}'
 	});
 
 	expect(output).toEqual(dedent(`
-		to be filled
+		- 2021-02-14 Add \`{date}\` replacement  with options (#30)
+		- 2021-02-04 Update user in examples
+		- 2020-12-30 Bump node-notifier from 8.0.0 to 8.0.1 (#26)
+		- 2020-12-30 Bump ini from 1.3.5 to 1.3.8 (#24)
+		- 2020-10-23 Fix minor typo in readme headings
 	`));
 });

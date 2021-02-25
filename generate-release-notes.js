@@ -14,6 +14,7 @@ async function generateReleaseNotes({
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
+	console.log('git', ...['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
 	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
 	commits = commits.split('\n').filter(Boolean).map(line => {
 		const [hash, date, title] = line.split('¬');
