@@ -240,7 +240,7 @@ async function run() {
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
 		const dateFormat = core.getInput('date-format');
-		const reverse = core.getInput('reverse-sort');
+		const reverseSort = core.getInput('reverse-sort');
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -277,7 +277,7 @@ async function run() {
 			owner,
 			name: releaseTitle.replace('{tag}', pushedTag),
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverse}),
+			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort}),
 			draft: false,
 			prerelease: false
 		});
@@ -875,14 +875,14 @@ async function generateReleaseNotes({
 	commitTemplate = '- {hash} {title}',
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
-	reverse = false
+	reverseSort = false
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
 	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
 	const {stdout: commitsReversed} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, '--reverse', range]);
 
-	commits = reverse ? commitsReversed : commits;
+	commits = reverseSort ? commitsReversed : commits;
 
 	commits = commits.split('\n').filter(Boolean).map(line => {
 		const [hash, date, title] = line.split('¬');
