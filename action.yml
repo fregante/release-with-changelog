@@ -11,7 +11,7 @@ inputs:
     description: Personal access token (PAT) used to create releases
     required: true
   title:
-    description: Custom tile
+    description: Custom title for the release
     required: false
   exclude:
     description: Regex to exclude commits based on their title (don't include the initial and final `/`)
