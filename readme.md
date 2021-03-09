@@ -55,9 +55,9 @@ Required: [Personal access token](https://docs.github.com/en/github/authenticati
 
 Default: `{tag}`
 
-Title for created release. Available replacements:
+Title for the release being create. Available replacements:
 
-- `{tag}` Latest tag available.
+- `{tag}` The tag for which the changelog is being generated.
 
 ### template
 
@@ -96,9 +96,9 @@ Setting this to `true` will enable the default preset, which may change over tim
 
 ### tag
 
-Default: _latest tag available_
+Default: _the tag that triggered the workflow run_ or _the latest tag available_
 
-Specific tag to generate changelog against.
+Specific tag for which to generate changelog.
 
 ### date-format
 
