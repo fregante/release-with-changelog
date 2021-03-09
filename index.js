@@ -13,7 +13,7 @@ async function run() {
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
 		const dateFormat = core.getInput('date-format');
-		const reverse = core.getInput('reverse');
+		const reverse = core.getInput('reverse-sort');
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
