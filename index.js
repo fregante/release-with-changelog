@@ -8,6 +8,7 @@ async function run() {
 	try {
 		const {owner, repo} = context.repo;
 
+		const releaseTitle = core.getInput('title');
 		const releaseTemplate = core.getInput('template');
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
@@ -46,6 +47,7 @@ async function run() {
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
+			name: releaseTitle.replace('{tag}', pushedTag),
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat}),
 			draft: false,
