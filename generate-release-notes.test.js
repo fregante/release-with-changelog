@@ -140,17 +140,19 @@ test('ensure that replacements aren’t applied in commit titles', async () => {
 
 test('generates changelog using reverse optios', async () => {
 	const output = await generateReleaseNotes({
-		range: 'v3.1.0..v3.2.0',
+		range,
 		sort: 'asc'
 	});
 
 	expect(output).toEqual(dedent(`
-		- a170b2e6 Fix minor typo in readme headings
-		- 524027dd Bump ini from 1.3.5 to 1.3.8 (#24)
-		- 5c804153 Bump node-notifier from 8.0.0 to 8.0.1 (#26)
-		- 6e89f5c9 Update user in examples
-		- f047902b Add support for \`{date}\` replacement (#33)
+		- 850de175 Meta: Update readme example to v3
+		- a6eb5131 Readme: make first example bare-bones (#18)
+		- bfe14281 Bump @actions/core from 1.2.4 to 1.2.6 (#19)
+		- a74ce6a1 Meta: Document how to add changelogs to old tags (#15)
+		- 71ec95ec Meta: update self workflow (#16)
+		- 8d79eb1a Meta: Add tests using jest (#22)
+		- f9cec2b2 Add support for \`exclude: true\` (#23)
 
-		[\`v3.1.0..v3.2.0\`](https://github.com/fregante/release-with-changelog/compare/v3.1.0..v3.2.0)
+		[\`v3.0.0..v3.1.0\`](https://github.com/fregante/release-with-changelog/compare/v3.0.0..v3.1.0)
 	`));
 });
