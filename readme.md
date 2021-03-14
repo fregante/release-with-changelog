@@ -108,12 +108,12 @@ Example: `%d.%m.%Y`
 
 Format of `{date}` replacement as used by [`git log --date`](https://git-scm.com/docs/git-log#Documentation/git-log.txt---dateltformatgt), as either a keyword or a `strftime` string. More info can be found in [StackOverflow answer](https://stackoverflow.com/questions/7853332/#34778736).
 
-### reverse
+### sort
 
-Default: `false` <br>
-Example: `true`
+Default: `desc` <br>
+Example: `asc`
 
-Set to `true` if you want to have changelog printed in reverse order.
+Set to `asc` if you want to have changelog printed in reverse order.
 
 ## Outputs
 

@@ -32,10 +32,10 @@ inputs:
     description: Format of git date included in commit-template
     required: false
     default: 'short'
-  reverse-sort:
+  sort:
     description: Specify if you want get changelog in reverse order
     required: false
-    default: 'false'
+    default: 'desc'
 runs:
   using: 'node12'
   main: 'distribution/index.js'

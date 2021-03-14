@@ -141,7 +141,7 @@ test('ensure that replacements aren’t applied in commit titles', async () => {
 test('generates changelog using reverse optios', async () => {
 	const output = await generateReleaseNotes({
 		range: 'v3.1.0..v3.2.0',
-		reverseSort: true
+		sort: 'asc'
 	});
 
 	expect(output).toEqual(dedent(`
