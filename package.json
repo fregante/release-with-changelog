@@ -21,8 +21,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@actions/core": "^1.2.6",
-		"@actions/github": "^4.0.0",
-		"webpack": "^5.24.4"
+		"@actions/github": "^4.0.0"
 	},
 	"devDependencies": {
 		"@zeit/ncc": "^0.22.3",
