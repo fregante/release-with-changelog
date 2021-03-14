@@ -15,8 +15,7 @@ async function generateReleaseNotes({
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
-	let {stdout: commits} = reverseSort ? await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, '--reverse', range]) : await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, range]);
-
+	let {stdout: commits} = await execFile('git', ['log', '--format=%H¬%ad¬%s', '--date=' + dateFormat, reverseSort && '--reverse', range].filter(Boolean));
 	commits = commits.split('\n').filter(Boolean).map(line => {
 		const [hash, date, title] = line.split('¬');
 		return {
