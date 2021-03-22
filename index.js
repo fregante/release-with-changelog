@@ -50,7 +50,7 @@ async function run() {
 			owner,
 			name: releaseTitle.replace('{tag}', pushedTag),
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort}),
+			body: await generateReleaseNotes({octokit, owner, repo, range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort}),
 			draft: false,
 			prerelease: false
 		});
