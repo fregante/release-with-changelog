@@ -241,8 +241,8 @@ async function run() {
 		const exclude = core.getInput('exclude');
 		const dateFormat = core.getInput('date-format');
 		const reverseSort = core.getInput('reverse-sort');
-		const draftOption = core.getInput('draft') === 'true';
-		const prereleaseOption = core.getInput('prerelease') === 'true';
+		const isDraft = core.getInput('draft') === 'true';
+		const isPrerelease = core.getInput('prerelease') === 'true';
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -280,8 +280,8 @@ async function run() {
 			name: releaseTitle.replace('{tag}', pushedTag),
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort}),
-			draft: draftOption,
-			prerelease: prereleaseOption
+			draft: isDraft,
+			prerelease: isPrerelease
 		});
 
 		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
