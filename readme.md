@@ -115,6 +115,20 @@ Example: `asc`
 
 Set to `asc` if you want to have changelog printed in reverse order.
 
+### draft
+
+Default: `false` <br>
+Example: `true`
+
+Set to `true` if you want to have draft release.
+
+### prerelease
+
+Default: `false` <br>
+Example: `true`
+
+Set to `true` if you want to have prerelease instead release.
+
 ## Outputs
 
 None.

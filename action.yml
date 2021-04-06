@@ -36,6 +36,14 @@ inputs:
     description: Specify if you want get changelog in reverse order
     required: false
     default: 'desc'
+  draft:
+    description: Set to true if you want to have draft release
+    required: false
+    default: 'false'
+  prerelease:
+    description: Set to true if you want to have prerelease instead release
+    required: false
+    default: 'false'
 runs:
   using: 'node12'
   main: 'distribution/index.js'
