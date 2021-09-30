@@ -46,6 +46,7 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
+		const octokit = getOctokit(core.getInput('token'));
 		const releaseNotes = await generateReleaseNotes({
 			octokit, owner, repo, range, exclude, commitTemplate,
 			releaseTemplate, dateFormat, reverseSort, skipOnEmpty
@@ -59,7 +60,6 @@ async function run() {
 		}
 
 		// Create a release with markdown content in body
-		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,

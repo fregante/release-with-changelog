@@ -225,15 +225,15 @@ exports.issueCommand = issueCommand;
 /***/ 104:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const { getOctokit, context } = __webpack_require__(469);
+const {getOctokit, context} = __webpack_require__(469);
 const core = __webpack_require__(470);
 const util = __webpack_require__(669);
 const execFile = util.promisify(__webpack_require__(129).execFile);
-const { generateReleaseNotes } = __webpack_require__(353);
+const {generateReleaseNotes} = __webpack_require__(353);
 
 async function run() {
 	try {
-		const { owner, repo } = context.repo;
+		const {owner, repo} = context.repo;
 
 		const releaseTitle = core.getInput('title');
 		const releaseTemplate = core.getInput('template');
@@ -249,7 +249,7 @@ async function run() {
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
 
 		// Get all tags, sorted by recently created tags
-		const { stdout: t } = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
+		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
 		if (tags.length === 0) {
@@ -267,12 +267,13 @@ async function run() {
 		// Get range to generate diff
 		let range = tags[1] + '..' + pushedTag;
 		if (tags.length < 2) {
-			const { stdout: rootCommit } = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
+			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
 			range = rootCommit.trim('') + '..' + pushedTag;
 		}
 
 		core.info('Computed range: ' + range);
 
+		const octokit = getOctokit(core.getInput('token'));
 		const releaseNotes = await generateReleaseNotes({
 			octokit, owner, repo, range, exclude, commitTemplate,
 			releaseTemplate, dateFormat, reverseSort, skipOnEmpty
@@ -286,7 +287,6 @@ async function run() {
 		}
 
 		// Create a release with markdown content in body
-		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,

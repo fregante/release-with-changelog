@@ -24,6 +24,8 @@ jobs:
         run: npm ci || npm install
       - name: Jest
         run: npm run jest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   Build:
     runs-on: ubuntu-latest
