@@ -138,7 +138,9 @@ Set to `true` if you want to skip creating the release when all commits are excl
 
 ## Outputs
 
-None.
+### skipped
+
+Will be set to `true` if skip-on-empty is enabled and a release was not created, `false` otherwise.
 
 ## Release notes for previous tags/releases
 
