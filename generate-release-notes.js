@@ -12,7 +12,7 @@ async function generateReleaseNotes({
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
 	sort = 'desc',
-	skipOnEmpty = 'false'
+	skipOnEmpty = false
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
