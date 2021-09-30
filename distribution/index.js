@@ -277,6 +277,7 @@ async function run() {
 
 		// Skip creating release if no commits
 		if (releaseNotes === null) {
+			core.setOutput('skipped', true);
 			return core.info('Skipped creating release for tag `' + pushedTag + '`');
 		}
 
@@ -291,7 +292,7 @@ async function run() {
 			draft: isDraft,
 			prerelease: isPrerelease
 		});
-
+		core.setOutput('skipped', false);
 		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
@@ -886,7 +887,7 @@ async function generateReleaseNotes({
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
 	sort = 'desc',
-	skipOnEmpty = 'false'
+	skipOnEmpty = false
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
