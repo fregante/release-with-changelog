@@ -276,6 +276,7 @@ async function run() {
 		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort, skipOnEmpty});
 
 		// Skip creating release if no commits
+		// Explicit check to avoid matching an empty string fregante/release-with-changelog/pull/48#discussion_r719593452
 		if (releaseNotes === undefined) {
 			core.setOutput('skipped', true);
 			return core.info('Skipped creating release for tag `' + pushedTag + '`');
