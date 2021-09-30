@@ -41,7 +41,7 @@ async function generateReleaseNotes({
 	const commitEntries = [];
 	if (commits.length === 0) {
 		if (skipOnEmpty) {
-			return null;
+			return;
 		}
 
 		commitEntries.push('_Maintenance release_');

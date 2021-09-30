@@ -276,7 +276,7 @@ async function run() {
 		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort, skipOnEmpty});
 
 		// Skip creating release if no commits
-		if (releaseNotes === null) {
+		if (releaseNotes === undefined) {
 			core.setOutput('skipped', true);
 			return core.info('Skipped creating release for tag `' + pushedTag + '`');
 		}
@@ -916,7 +916,7 @@ async function generateReleaseNotes({
 	const commitEntries = [];
 	if (commits.length === 0) {
 		if (skipOnEmpty) {
-			return null;
+			return;
 		}
 
 		commitEntries.push('_Maintenance release_');

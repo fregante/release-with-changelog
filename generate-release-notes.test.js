@@ -179,5 +179,5 @@ test('generates changelog with all commits excluded and skip-on-empty', async ()
 		skipOnEmpty: true
 	});
 
-	expect(output).toEqual(null);
+	expect(output).toEqual(undefined);
 });
