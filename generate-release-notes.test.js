@@ -163,6 +163,31 @@ test('generates changelog using reverse optios', async () => {
 	`));
 });
 
+test('generates changelog with all commits excluded', async () => {
+	const output = await generateReleaseNotes({
+		range,
+		commitTemplate: '- {title}',
+		releaseTemplate: '{commits}',
+		exclude: 'a|e|i|o|u'
+	});
+
+	expect(output).toEqual(dedent(`
+		_Maintenance release_ 
+	`));
+});
+
+test('generates changelog with all commits excluded and skip-on-empty', async () => {
+	const output = await generateReleaseNotes({
+		range,
+		commitTemplate: '- {title}',
+		releaseTemplate: '{commits}',
+		exclude: 'a|e|i|o|u',
+		skipOnEmpty: true
+	});
+
+	expect(output).toEqual(undefined);
+});
+
 test('generates changelog using author replacement', async () => {
 	const output = await generateReleaseNotes({
 		octokit,

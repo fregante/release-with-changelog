@@ -225,15 +225,15 @@ exports.issueCommand = issueCommand;
 /***/ 104:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const {getOctokit, context} = __webpack_require__(469);
+const { getOctokit, context } = __webpack_require__(469);
 const core = __webpack_require__(470);
 const util = __webpack_require__(669);
 const execFile = util.promisify(__webpack_require__(129).execFile);
-const {generateReleaseNotes} = __webpack_require__(353);
+const { generateReleaseNotes } = __webpack_require__(353);
 
 async function run() {
 	try {
-		const {owner, repo} = context.repo;
+		const { owner, repo } = context.repo;
 
 		const releaseTitle = core.getInput('title');
 		const releaseTemplate = core.getInput('template');
@@ -243,12 +243,13 @@ async function run() {
 		const reverseSort = core.getInput('reverse-sort');
 		const isDraft = core.getInput('draft') === 'true';
 		const isPrerelease = core.getInput('prerelease') === 'true';
+		const skipOnEmpty = core.getInput('skip-on-empty') === 'true';
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
 
 		// Get all tags, sorted by recently created tags
-		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
+		const { stdout: t } = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
 		if (tags.length === 0) {
@@ -266,11 +267,23 @@ async function run() {
 		// Get range to generate diff
 		let range = tags[1] + '..' + pushedTag;
 		if (tags.length < 2) {
-			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
+			const { stdout: rootCommit } = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
 			range = rootCommit.trim('') + '..' + pushedTag;
 		}
 
 		core.info('Computed range: ' + range);
+
+		const releaseNotes = await generateReleaseNotes({
+			octokit, owner, repo, range, exclude, commitTemplate,
+			releaseTemplate, dateFormat, reverseSort, skipOnEmpty
+		});
+
+		// Skip creating release if no commits
+		// Explicit check to avoid matching an empty string https://github.com/fregante/release-with-changelog/pull/48#discussion_r719593452
+		if (releaseNotes === undefined) {
+			core.setOutput('skipped', true);
+			return core.info('Skipped creating release for tag `' + pushedTag + '`');
+		}
 
 		// Create a release with markdown content in body
 		const octokit = getOctokit(core.getInput('token'));
@@ -279,14 +292,11 @@ async function run() {
 			owner,
 			name: releaseTitle.replace('{tag}', pushedTag),
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: await generateReleaseNotes({
-				octokit, owner, repo, range, exclude,
-				commitTemplate, releaseTemplate, dateFormat, reverseSort
-			}),
+			body: releaseNotes,
 			draft: isDraft,
 			prerelease: isPrerelease
 		});
-
+		core.setOutput('skipped', false);
 		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
@@ -883,7 +893,8 @@ async function generateReleaseNotes({
 	commitTemplate = '- {hash} {title}',
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
-	sort = 'desc'
+	sort = 'desc',
+	skipOnEmpty = false
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
@@ -911,6 +922,10 @@ async function generateReleaseNotes({
 
 	const commitEntries = [];
 	if (commits.length === 0) {
+		if (skipOnEmpty) {
+			return;
+		}
+
 		commitEntries.push('_Maintenance release_');
 	} else {
 		for (const {hash, date, title} of commits) {
