@@ -129,6 +129,13 @@ Example: `true`
 
 Set to `true` if you want to have prerelease instead release.
 
+### skip-on-empty
+
+Default: `false` <br>
+Example: `true`
+
+Set to `true` if you want to skip creating the release when all commits are excluded.
+
 ## Outputs
 
 None.
