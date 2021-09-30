@@ -243,6 +243,7 @@ async function run() {
 		const reverseSort = core.getInput('reverse-sort');
 		const isDraft = core.getInput('draft') === 'true';
 		const isPrerelease = core.getInput('prerelease') === 'true';
+		const skipOnEmpty = core.getInput('skip-on-empty') === 'true';
 
 		// Fetch tags from remote
 		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
@@ -272,6 +273,14 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
+		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort, skipOnEmpty});
+
+		// Skip creating release if no commits
+		if (releaseNotes === undefined) {
+			core.setOutput('skipped', true);
+			return core.info('Skipped creating release for tag `' + pushedTag + '`');
+		}
+
 		// Create a release with markdown content in body
 		const octokit = getOctokit(core.getInput('token'));
 		const createReleaseResponse = await octokit.repos.createRelease({
@@ -279,11 +288,11 @@ async function run() {
 			owner,
 			name: releaseTitle.replace('{tag}', pushedTag),
 			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort}),
+			body: releaseNotes,
 			draft: isDraft,
 			prerelease: isPrerelease
 		});
-
+		core.setOutput('skipped', false);
 		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
@@ -877,7 +886,8 @@ async function generateReleaseNotes({
 	commitTemplate = '- {hash} {title}',
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
-	sort = 'desc'
+	sort = 'desc',
+	skipOnEmpty = false
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
@@ -905,6 +915,10 @@ async function generateReleaseNotes({
 
 	const commitEntries = [];
 	if (commits.length === 0) {
+		if (skipOnEmpty) {
+			return;
+		}
+
 		commitEntries.push('_Maintenance release_');
 	} else {
 		for (const {hash, date, title} of commits) {

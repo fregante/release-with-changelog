@@ -156,3 +156,28 @@ test('generates changelog using reverse optios', async () => {
 		[\`v3.0.0..v3.1.0\`](https://github.com/fregante/release-with-changelog/compare/v3.0.0..v3.1.0)
 	`));
 });
+
+test('generates changelog with all commits excluded', async () => {
+	const output = await generateReleaseNotes({
+		range,
+		commitTemplate: '- {title}',
+		releaseTemplate: '{commits}',
+		exclude: 'a|e|i|o|u'
+	});
+
+	expect(output).toEqual(dedent(`
+		_Maintenance release_ 
+	`));
+});
+
+test('generates changelog with all commits excluded and skip-on-empty', async () => {
+	const output = await generateReleaseNotes({
+		range,
+		commitTemplate: '- {title}',
+		releaseTemplate: '{commits}',
+		exclude: 'a|e|i|o|u',
+		skipOnEmpty: true
+	});
+
+	expect(output).toEqual(undefined);
+});
