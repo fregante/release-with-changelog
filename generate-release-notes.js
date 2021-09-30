@@ -11,7 +11,8 @@ async function generateReleaseNotes({
 	commitTemplate = '- {hash} {title}',
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
-	sort = 'desc'
+	sort = 'desc',
+	skipOnEmpty = 'false'
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
@@ -39,6 +40,10 @@ async function generateReleaseNotes({
 
 	const commitEntries = [];
 	if (commits.length === 0) {
+		if (skipOnEmpty) {
+			return null;
+		}
+
 		commitEntries.push('_Maintenance release_');
 	} else {
 		for (const {hash, date, title} of commits) {
