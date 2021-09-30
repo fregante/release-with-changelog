@@ -44,6 +44,10 @@ inputs:
     description: Set to true if you want to have prerelease instead release
     required: false
     default: 'false'
+  skip-on-empty:
+    description: Set to true to skip creating a release when all commits are excluded
+    required: false
+    default: 'false'
 runs:
   using: 'node12'
   main: 'distribution/index.js'
