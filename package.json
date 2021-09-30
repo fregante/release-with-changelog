@@ -2,11 +2,12 @@
 	"name": "release-with-changelog",
 	"version": "1.0.0",
 	"description": "Create a GitHub relase with changelog for every tag you push",
+	"type": "module",
 	"main": "distribution/index.js",
 	"scripts": {
 		"build": "ncc build index.js -o distribution",
 		"test": "xo && npm run jest",
-		"jest": "GITHUB_SERVER_URL='https://github.com' GITHUB_REPOSITORY='fregante/release-with-changelog' jest"
+		"jest": "NODE_OPTIONS=--experimental-vm-modules GITHUB_SERVER_URL='https://github.com' GITHUB_REPOSITORY='fregante/release-with-changelog' jest"
 	},
 	"repository": "fregante/release-with-changelog",
 	"keywords": [
@@ -20,14 +21,14 @@
 	"author": "Laxman Damera",
 	"license": "MIT",
 	"dependencies": {
-		"@actions/core": "^1.2.6",
-		"@actions/github": "^4.0.0"
+		"@actions/core": "^1.6.0",
+		"@actions/github": "^5.0.0"
 	},
 	"devDependencies": {
 		"@zeit/ncc": "^0.22.3",
-		"jest": "^26.5.3",
-		"strip-indent": "^3.0.0",
-		"xo": "^0.32.1"
+		"jest": "^27.2.4",
+		"strip-indent": "^4.0.0",
+		"xo": "^0.44.0"
 	},
 	"xo": {
 		"envs": [
@@ -36,5 +37,8 @@
 		"ignore": [
 			"distribution"
 		]
+	},
+	"jest": {
+		"transform": {}
 	}
 }
