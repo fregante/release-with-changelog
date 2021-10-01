@@ -40,8 +40,10 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(104);
+/******/ 		return __webpack_require__(52);
 /******/ 	};
+/******/ 	// initialize runtime
+/******/ 	runtime(__webpack_require__);
 /******/
 /******/ 	// run startup
 /******/ 	return startup();
@@ -85,6 +87,14 @@ function wrappy (fn, cb) {
     return ret
   }
 }
+
+
+/***/ }),
+
+/***/ 14:
+/***/ (function(module) {
+
+module.exports = eval("require")("node:child_process");
 
 
 /***/ }),
@@ -149,6 +159,180 @@ function onceStrict (fn) {
   f.called = false
   return f
 }
+
+
+/***/ }),
+
+/***/ 52:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:process
+var _notfoundnode_process = __webpack_require__(998);
+var _notfoundnode_process_default = /*#__PURE__*/__webpack_require__.n(_notfoundnode_process);
+
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:util
+var _notfoundnode_util = __webpack_require__(423);
+
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:child_process
+var _notfoundnode_child_process = __webpack_require__(14);
+
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __webpack_require__(469);
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
+var core_default = /*#__PURE__*/__webpack_require__.n(core);
+
+// CONCATENATED MODULE: ./generate-release-notes.js
+
+
+
+
+const execFilePromised = Object(_notfoundnode_util.promisify)(_notfoundnode_child_process.execFile);
+
+const repoURL = _notfoundnode_process_default.a.env.GITHUB_SERVER_URL + '/' + _notfoundnode_process_default.a.env.GITHUB_REPOSITORY;
+
+const excludePreset = /^bump |^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
+
+async function generateReleaseNotes({
+	range,
+	exclude = '',
+	commitTemplate = '- {hash} {title}',
+	releaseTemplate = '{commits}\n\n{range}',
+	dateFormat = 'short',
+	sort = 'desc',
+	skipOnEmpty = false,
+}) {
+	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
+	// Get commits between computed range
+	let {stdout: commits} = await execFilePromised('git', [
+		'log',
+		'--format=%H¬%ad¬%s',
+		'--date=' + dateFormat,
+		sort === 'asc' && '--reverse',
+		range,
+	].filter(Boolean));
+	commits = commits.split('\n').filter(Boolean).map(line => {
+		const [hash, date, title] = line.split('¬');
+		return {
+			hash: hash.slice(0, 8),
+			date,
+			title,
+		};
+	});
+
+	if (exclude) {
+		// Booleans aren't currently supported: https://github.com/actions/toolkit/issues/361
+		const regex = exclude === 'true' || exclude === true ? excludePreset : new RegExp(exclude);
+		commits = commits.filter(({title}) => !regex.test(title));
+	}
+
+	const commitEntries = [];
+	if (commits.length === 0) {
+		if (skipOnEmpty) {
+			return;
+		}
+
+		commitEntries.push('_Maintenance release_');
+	} else {
+		for (const {hash, date, title} of commits) {
+			const line = commitTemplate
+				.replace('{hash}', hash)
+				.replace('{url}', repoURL + '/commit/' + hash)
+				.replace('{date}', date)
+				.replace('{title}', title);
+			commitEntries.push(line);
+		}
+	}
+
+	return releaseTemplate
+		.replace('{commits}', commitEntries.join('\n'))
+		.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`);
+}
+
+// CONCATENATED MODULE: ./index.js
+
+
+
+
+
+
+
+const index_execFilePromised = Object(_notfoundnode_util.promisify)(_notfoundnode_child_process.execFile);
+
+async function run() {
+	try {
+		const {owner, repo} = github.context.repo;
+
+		const releaseTitle = core_default().getInput('title');
+		const releaseTemplate = core_default().getInput('template');
+		const commitTemplate = core_default().getInput('commit-template');
+		const exclude = core_default().getInput('exclude');
+		const dateFormat = core_default().getInput('date-format');
+		const reverseSort = core_default().getInput('reverse-sort');
+		const isDraft = core_default().getInput('draft') === 'true';
+		const isPrerelease = core_default().getInput('prerelease') === 'true';
+		const skipOnEmpty = core_default().getInput('skip-on-empty') === 'true';
+
+		// Fetch tags from remote
+		await index_execFilePromised('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
+
+		// Get all tags, sorted by recently created tags
+		const {stdout: t} = await index_execFilePromised('git', ['tag', '-l', '--sort=-creatordate']);
+		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
+
+		if (tags.length === 0) {
+			core_default().info('There is nothing to be done here. Exiting!');
+			return;
+		}
+
+		let pushedTag = core_default().getInput('tag') || tags[0];
+
+		if (_notfoundnode_process_default().env.GITHUB_REF.startsWith('refs/tags/')) {
+			pushedTag = _notfoundnode_process_default().env.GITHUB_REF.replace('refs/tags/', '');
+			core_default().info('Using pushed tag as reference: ' + pushedTag);
+		}
+
+		// Get range to generate diff
+		let range = tags[1] + '..' + pushedTag;
+		if (tags.length < 2) {
+			const {stdout: rootCommit} = await index_execFilePromised('git', ['rev-list', '--max-parents=0', 'HEAD']);
+			range = rootCommit.trim('') + '..' + pushedTag;
+		}
+
+		core_default().info('Computed range: ' + range);
+
+		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort, skipOnEmpty});
+
+		// Skip creating release if no commits
+		// Explicit check to avoid matching an empty string https://github.com/fregante/release-with-changelog/pull/48#discussion_r719593452
+		if (releaseNotes === undefined) {
+			core_default().setOutput('skipped', true);
+			return core_default().info('Skipped creating release for tag `' + pushedTag + '`');
+		}
+
+		// Create a release with markdown content in body
+		const octokit = Object(github.getOctokit)(core_default().getInput('token'));
+		const createReleaseResponse = await octokit.repos.createRelease({
+			repo,
+			owner,
+			name: releaseTitle.replace('{tag}', pushedTag),
+			tag_name: pushedTag, // eslint-disable-line camelcase
+			body: releaseNotes,
+			draft: isDraft,
+			prerelease: isPrerelease,
+		});
+		core_default().setOutput('skipped', false);
+		core_default().info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
+	} catch (error) {
+		core_default().setFailed(error.message);
+	}
+}
+
+run();
 
 
 /***/ }),
@@ -275,89 +459,6 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 104:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
-
-const {promisify} = __webpack_require__(669);
-const {getOctokit, context} = __webpack_require__(469);
-const core = __webpack_require__(470);
-const execFile = promisify(__webpack_require__(129).execFile);
-const {generateReleaseNotes} = __webpack_require__(353);
-
-async function run() {
-	try {
-		const {owner, repo} = context.repo;
-
-		const releaseTitle = core.getInput('title');
-		const releaseTemplate = core.getInput('template');
-		const commitTemplate = core.getInput('commit-template');
-		const exclude = core.getInput('exclude');
-		const dateFormat = core.getInput('date-format');
-		const reverseSort = core.getInput('reverse-sort');
-		const isDraft = core.getInput('draft') === 'true';
-		const isPrerelease = core.getInput('prerelease') === 'true';
-		const skipOnEmpty = core.getInput('skip-on-empty') === 'true';
-
-		// Fetch tags from remote
-		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
-
-		// Get all tags, sorted by recently created tags
-		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
-		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
-
-		if (tags.length === 0) {
-			core.info('There is nothing to be done here. Exiting!');
-			return;
-		}
-
-		let pushedTag = core.getInput('tag') || tags[0];
-
-		if (process.env.GITHUB_REF.startsWith('refs/tags/')) {
-			pushedTag = process.env.GITHUB_REF.replace('refs/tags/', '');
-			core.info('Using pushed tag as reference: ' + pushedTag);
-		}
-
-		// Get range to generate diff
-		let range = tags[1] + '..' + pushedTag;
-		if (tags.length < 2) {
-			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
-			range = rootCommit.trim('') + '..' + pushedTag;
-		}
-
-		core.info('Computed range: ' + range);
-
-		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort, skipOnEmpty});
-
-		// Skip creating release if no commits
-		// Explicit check to avoid matching an empty string https://github.com/fregante/release-with-changelog/pull/48#discussion_r719593452
-		if (releaseNotes === undefined) {
-			core.setOutput('skipped', true);
-			return core.info('Skipped creating release for tag `' + pushedTag + '`');
-		}
-
-		// Create a release with markdown content in body
-		const octokit = getOctokit(core.getInput('token'));
-		const createReleaseResponse = await octokit.repos.createRelease({
-			repo,
-			owner,
-			name: releaseTitle.replace('{tag}', pushedTag),
-			tag_name: pushedTag, // eslint-disable-line camelcase
-			body: releaseNotes,
-			draft: isDraft,
-			prerelease: isPrerelease,
-		});
-		core.setOutput('skipped', false);
-		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
-	} catch (error) {
-		core.setFailed(error.message);
-	}
-}
-
-run();
-
-
-/***/ }),
-
 /***/ 127:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -405,13 +506,6 @@ function getApiBaseUrl() {
 }
 exports.getApiBaseUrl = getApiBaseUrl;
 //# sourceMappingURL=utils.js.map
-
-/***/ }),
-
-/***/ 129:
-/***/ (function(module) {
-
-module.exports = require("child_process");
 
 /***/ }),
 
@@ -1492,77 +1586,6 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
-/***/ 353:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-const {promisify} = __webpack_require__(669);
-const execFile = promisify(__webpack_require__(129).execFile);
-
-const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY;
-
-const excludePreset = /^bump |^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
-
-async function generateReleaseNotes({
-	range,
-	exclude = '',
-	commitTemplate = '- {hash} {title}',
-	releaseTemplate = '{commits}\n\n{range}',
-	dateFormat = 'short',
-	sort = 'desc',
-	skipOnEmpty = false,
-}) {
-	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
-	// Get commits between computed range
-	let {stdout: commits} = await execFile('git', [
-		'log',
-		'--format=%H¬%ad¬%s',
-		'--date=' + dateFormat,
-		sort === 'asc' && '--reverse',
-		range,
-	].filter(Boolean));
-	commits = commits.split('\n').filter(Boolean).map(line => {
-		const [hash, date, title] = line.split('¬');
-		return {
-			hash: hash.slice(0, 8),
-			date,
-			title,
-		};
-	});
-
-	if (exclude) {
-		// Booleans aren't currently supported: https://github.com/actions/toolkit/issues/361
-		const regex = exclude === 'true' || exclude === true ? excludePreset : new RegExp(exclude);
-		commits = commits.filter(({title}) => !regex.test(title));
-	}
-
-	const commitEntries = [];
-	if (commits.length === 0) {
-		if (skipOnEmpty) {
-			return;
-		}
-
-		commitEntries.push('_Maintenance release_');
-	} else {
-		for (const {hash, date, title} of commits) {
-			const line = commitTemplate
-				.replace('{hash}', hash)
-				.replace('{url}', repoURL + '/commit/' + hash)
-				.replace('{date}', date)
-				.replace('{title}', title);
-			commitEntries.push(line);
-		}
-	}
-
-	return releaseTemplate
-		.replace('{commits}', commitEntries.join('\n'))
-		.replace('{range}', `[\`${range}\`](${repoURL}/compare/${range})`);
-}
-
-exports.generateReleaseNotes = generateReleaseNotes;
-
-
-/***/ }),
-
 /***/ 356:
 /***/ (function(__unusedmodule, exports) {
 
@@ -2018,6 +2041,14 @@ exports.endpoint = endpoint;
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 module.exports = __webpack_require__(141);
+
+
+/***/ }),
+
+/***/ 423:
+/***/ (function(module) {
+
+module.exports = eval("require")("node:util");
 
 
 /***/ }),
@@ -8557,6 +8588,72 @@ module.exports.toUnicode = function(domain_name, useSTD3) {
 module.exports.PROCESSING_OPTIONS = PROCESSING_OPTIONS;
 
 
+/***/ }),
+
+/***/ 998:
+/***/ (function(module) {
+
+module.exports = eval("require")("node:process");
+
+
 /***/ })
 
-/******/ });
+/******/ },
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ 	"use strict";
+/******/ 
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	!function() {
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 			if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 			return ns;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function getDefault() { return module['default']; } :
+/******/ 				function getModuleExports() { return module; };
+/******/ 			__webpack_require__.d(getter, 'a', getter);
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ }
+);
