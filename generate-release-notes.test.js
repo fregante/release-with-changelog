@@ -1,8 +1,6 @@
-const {getOctokit, context} = require('@actions/github');
-const core = require('@actions/core');
-
-const stripIndent = require('strip-indent');
-const {generateReleaseNotes} = require('./generate-release-notes');
+import {getOctokit, context} from '@actions/github';
+import stripIndent from 'strip-indent';
+import {generateReleaseNotes} from './generate-release-notes.js';
 
 const dedent = string => stripIndent(string).trim();
 const range = 'v3.0.0..v3.1.0';
@@ -35,7 +33,7 @@ test('generates changelog with custom release template', async () => {
 			{commits}
 
 			❤
-		`)
+		`),
 	});
 
 	expect(output).toEqual(dedent(`
@@ -57,7 +55,7 @@ test('generates changelog with custom commit template', async () => {
 	const output = await generateReleaseNotes({
 		range,
 		commitTemplate: '- {title}',
-		releaseTemplate: '{commits}'
+		releaseTemplate: '{commits}',
 	});
 
 	expect(output).toEqual(dedent(`
@@ -76,7 +74,7 @@ test('generates changelog with custom exclude', async () => {
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
-		exclude: '^Meta|^Lint|^Refactor'
+		exclude: '^Meta|^Lint|^Refactor',
 	});
 
 	expect(output).toEqual(dedent(`
@@ -91,7 +89,7 @@ test('generates changelog with exclude preset', async () => {
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
-		exclude: 'true'
+		exclude: 'true',
 	});
 
 	expect(output).toEqual(dedent(`
@@ -103,7 +101,7 @@ test('generates changelog with date presets', async () => {
 	const output = await generateReleaseNotes({
 		range,
 		commitTemplate: '- {date} {title}',
-		releaseTemplate: '{commits}'
+		releaseTemplate: '{commits}',
 	});
 
 	expect(output).toEqual(dedent(`
@@ -122,7 +120,7 @@ test('generates changelog with custom date presets', async () => {
 		range,
 		commitTemplate: '- {date} {title}',
 		releaseTemplate: '{commits}',
-		dateFormat: '%d.%m.%Y'
+		dateFormat: '%d.%m.%Y',
 	});
 
 	expect(output).toEqual(dedent(`
@@ -138,7 +136,7 @@ test('generates changelog with custom date presets', async () => {
 
 test('ensure that replacements aren’t applied in commit titles', async () => {
 	const output = await generateReleaseNotes({
-		range: 'v3.1.0..v3.2.0'
+		range: 'v3.1.0..v3.2.0',
 	});
 
 	expect(output).toEqual(expect.stringContaining('{date}'));
@@ -147,7 +145,7 @@ test('ensure that replacements aren’t applied in commit titles', async () => {
 test('generates changelog using reverse optios', async () => {
 	const output = await generateReleaseNotes({
 		range,
-		sort: 'asc'
+		sort: 'asc',
 	});
 
 	expect(output).toEqual(dedent(`
@@ -168,11 +166,11 @@ test('generates changelog with all commits excluded', async () => {
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
-		exclude: 'a|e|i|o|u'
+		exclude: 'a|e|i|o|u',
 	});
 
 	expect(output).toEqual(dedent(`
-		_Maintenance release_ 
+		_Maintenance release_
 	`));
 });
 
@@ -182,7 +180,7 @@ test('generates changelog with all commits excluded and skip-on-empty', async ()
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
 		exclude: 'a|e|i|o|u',
-		skipOnEmpty: true
+		skipOnEmpty: true,
 	});
 
 	expect(output).toEqual(undefined);
