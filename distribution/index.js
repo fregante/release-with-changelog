@@ -181,12 +181,14 @@ var _notfoundnode_child_process = __webpack_require__(14);
 
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __webpack_require__(469);
+var github_default = /*#__PURE__*/__webpack_require__.n(github);
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __webpack_require__(470);
 var core_default = /*#__PURE__*/__webpack_require__.n(core);
 
 // CONCATENATED MODULE: ./generate-release-notes.js
+
 
 
 
@@ -198,9 +200,7 @@ const repoURL = _notfoundnode_process_default.a.env.GITHUB_SERVER_URL + '/' + _n
 const excludePreset = /^bump |^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
 
 async function generateReleaseNotes({
-	octokit,
-	owner,
-	repo,
+	token,
 	range,
 	exclude = '',
 	commitTemplate = '- {hash} {title}',
@@ -241,9 +241,12 @@ async function generateReleaseNotes({
 
 		commitEntries.push('_Maintenance release_');
 	} else {
+		const {owner, repo} = github.context.repo;
+		const octokit = github_default().getOctokit(token);
+
 		/* eslint-disable no-await-in-loop */
 		for (const {hash, date, title} of commits) {
-			const {data} = await octokit.repos.getCommit({
+			const {data} = await octokit.rest.repos.getCommit({
 				owner,
 				repo,
 				ref: hash,

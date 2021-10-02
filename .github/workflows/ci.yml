@@ -23,7 +23,7 @@ jobs:
       - name: install
         run: npm ci || npm install
       - name: Jest
-        run: npm run jest -- ${{ secrets.GITHUB_TOKEN }}
+        run: npm run jest --token=${{ secrets.GITHUB_TOKEN }}
 
   Build:
     runs-on: ubuntu-latest

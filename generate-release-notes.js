@@ -1,6 +1,7 @@
 import {promisify} from 'node:util';
 import {execFile} from 'node:child_process';
 import process from 'node:process';
+import github, {context} from '@actions/github';
 
 const execFilePromised = promisify(execFile);
 
@@ -9,9 +10,7 @@ const repoURL = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSIT
 const excludePreset = /^bump |^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
 
 export async function generateReleaseNotes({
-	octokit,
-	owner,
-	repo,
+	token,
 	range,
 	exclude = '',
 	commitTemplate = '- {hash} {title}',
@@ -52,9 +51,12 @@ export async function generateReleaseNotes({
 
 		commitEntries.push('_Maintenance release_');
 	} else {
+		const {owner, repo} = context.repo;
+		const octokit = github.getOctokit(token);
+
 		/* eslint-disable no-await-in-loop */
 		for (const {hash, date, title} of commits) {
-			const {data} = await octokit.repos.getCommit({
+			const {data} = await octokit.rest.repos.getCommit({
 				owner,
 				repo,
 				ref: hash,

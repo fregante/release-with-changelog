@@ -1,15 +1,17 @@
-import {getOctokit, context} from '@actions/github';
+import process from 'node:process';
 import stripIndent from 'strip-indent';
 import {generateReleaseNotes} from './generate-release-notes.js';
 
 const dedent = string => stripIndent(string).trim();
 const range = 'v3.0.0..v3.1.0';
 
-const {owner, repo} = context.repo;
-const octokit = getOctokit(process.argv[2]);
+const token = process.env.npm_config_token;
 
 test('generates changelog using default options', async () => {
-	const output = await generateReleaseNotes({range});
+	const output = await generateReleaseNotes({
+		token,
+		range,
+	});
 
 	expect(output).toEqual(dedent(`
 		- f9cec2b2 Add support for \`exclude: true\` (#23)
@@ -26,6 +28,7 @@ test('generates changelog using default options', async () => {
 
 test('generates changelog with custom release template', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		releaseTemplate: dedent(`
 			### Changelog
@@ -53,6 +56,7 @@ test('generates changelog with custom release template', async () => {
 
 test('generates changelog with custom commit template', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
@@ -71,6 +75,7 @@ test('generates changelog with custom commit template', async () => {
 
 test('generates changelog with custom exclude', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
@@ -86,6 +91,7 @@ test('generates changelog with custom exclude', async () => {
 
 test('generates changelog with exclude preset', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
@@ -99,6 +105,7 @@ test('generates changelog with exclude preset', async () => {
 
 test('generates changelog with date presets', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {date} {title}',
 		releaseTemplate: '{commits}',
@@ -117,6 +124,7 @@ test('generates changelog with date presets', async () => {
 
 test('generates changelog with custom date presets', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {date} {title}',
 		releaseTemplate: '{commits}',
@@ -136,6 +144,7 @@ test('generates changelog with custom date presets', async () => {
 
 test('ensure that replacements aren’t applied in commit titles', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range: 'v3.1.0..v3.2.0',
 	});
 
@@ -144,6 +153,7 @@ test('ensure that replacements aren’t applied in commit titles', async () => {
 
 test('generates changelog using reverse optios', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		sort: 'asc',
 	});
@@ -163,6 +173,7 @@ test('generates changelog using reverse optios', async () => {
 
 test('generates changelog with all commits excluded', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
@@ -176,6 +187,7 @@ test('generates changelog with all commits excluded', async () => {
 
 test('generates changelog with all commits excluded and skip-on-empty', async () => {
 	const output = await generateReleaseNotes({
+		token,
 		range,
 		commitTemplate: '- {title}',
 		releaseTemplate: '{commits}',
@@ -188,9 +200,7 @@ test('generates changelog with all commits excluded and skip-on-empty', async ()
 
 test('generates changelog using author replacement', async () => {
 	const output = await generateReleaseNotes({
-		octokit,
-		owner,
-		repo,
+		token,
 		range,
 		commitTemplate: '- {author} > {title}',
 	});
