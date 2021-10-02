@@ -1,3 +1,4 @@
+import process from 'node:process';
 import {promisify} from 'node:util';
 import {execFile} from 'node:child_process';
 import {getOctokit, context} from '@actions/github';
