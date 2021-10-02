@@ -1,5 +1,4 @@
 import {getOctokit, context} from '@actions/github';
-import core from '@actions/core';
 import stripIndent from 'strip-indent';
 import {generateReleaseNotes} from './generate-release-notes.js';
 
@@ -7,7 +6,7 @@ const dedent = string => stripIndent(string).trim();
 const range = 'v3.0.0..v3.1.0';
 
 const {owner, repo} = context.repo;
-const octokit = getOctokit(core.getInput('token'));
+const octokit = getOctokit(process.argv[2]);
 
 test('generates changelog using default options', async () => {
 	const output = await generateReleaseNotes({range});
