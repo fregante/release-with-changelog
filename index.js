@@ -50,8 +50,16 @@ async function run() {
 
 		const octokit = getOctokit(core.getInput('token'));
 		const releaseNotes = await generateReleaseNotes({
-			octokit, owner, repo, range, exclude, commitTemplate,
-			releaseTemplate, dateFormat, reverseSort, skipOnEmpty
+			octokit,
+			owner,
+			repo,
+			range,
+			exclude,
+			commitTemplate,
+			releaseTemplate,
+			dateFormat,
+			reverseSort,
+			skipOnEmpty
 		});
 
 		// Skip creating release if no commits
