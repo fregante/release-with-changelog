@@ -52,11 +52,12 @@ export async function generateReleaseNotes({
 
 		commitEntries.push('_Maintenance release_');
 	} else {
+		/* eslint-disable no-await-in-loop */
 		for (const {hash, date, title} of commits) {
 			const {data} = await octokit.repos.getCommit({
 				owner,
 				repo,
-				ref: hash
+				ref: hash,
 			});
 			const author = '@' + data.author.login;
 			const line = commitTemplate
@@ -67,6 +68,7 @@ export async function generateReleaseNotes({
 				.replace('{title}', title);
 			commitEntries.push(line);
 		}
+		/* eslint-enable no-await-in-loop */
 	}
 
 	return releaseTemplate

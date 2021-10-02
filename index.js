@@ -60,7 +60,7 @@ async function run() {
 			releaseTemplate,
 			dateFormat,
 			reverseSort,
-			skipOnEmpty
+			skipOnEmpty,
 		});
 
 		// Skip creating release if no commits

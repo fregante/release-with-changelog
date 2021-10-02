@@ -1,4 +1,5 @@
 import {getOctokit, context} from '@actions/github';
+import core from '@actions/core';
 import stripIndent from 'strip-indent';
 import {generateReleaseNotes} from './generate-release-notes.js';
 
@@ -192,7 +193,7 @@ test('generates changelog using author replacement', async () => {
 		owner,
 		repo,
 		range,
-		commitTemplate: '- {author} > {title}'
+		commitTemplate: '- {author} > {title}',
 	});
 
 	expect(output).toEqual(dedent(`
