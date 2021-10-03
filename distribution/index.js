@@ -281,6 +281,7 @@ const index_execFilePromised = Object(_notfoundnode_util.promisify)(_notfoundnod
 async function run() {
 	try {
 		const {owner, repo} = github.context.repo;
+		const token = core_default().getInput('token');
 
 		const releaseTitle = core_default().getInput('title');
 		const releaseTemplate = core_default().getInput('template');
@@ -320,11 +321,8 @@ async function run() {
 
 		core_default().info('Computed range: ' + range);
 
-		const octokit = Object(github.getOctokit)(core_default().getInput('token'));
 		const releaseNotes = await generateReleaseNotes({
-			octokit,
-			owner,
-			repo,
+			token,
 			range,
 			exclude,
 			commitTemplate,
@@ -342,6 +340,7 @@ async function run() {
 		}
 
 		// Create a release with markdown content in body
+		const octokit = Object(github.getOctokit)(token);
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,

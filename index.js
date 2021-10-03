@@ -10,6 +10,7 @@ const execFilePromised = promisify(execFile);
 async function run() {
 	try {
 		const {owner, repo} = context.repo;
+		const token = core.getInput('token');
 
 		const releaseTitle = core.getInput('title');
 		const releaseTemplate = core.getInput('template');
@@ -49,11 +50,8 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
-		const octokit = getOctokit(core.getInput('token'));
 		const releaseNotes = await generateReleaseNotes({
-			octokit,
-			owner,
-			repo,
+			token,
 			range,
 			exclude,
 			commitTemplate,
@@ -71,6 +69,7 @@ async function run() {
 		}
 
 		// Create a release with markdown content in body
+		const octokit = getOctokit(token);
 		const createReleaseResponse = await octokit.repos.createRelease({
 			repo,
 			owner,
