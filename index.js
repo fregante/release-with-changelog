@@ -13,7 +13,7 @@ async function run() {
 		const commitTemplate = core.getInput('commit-template');
 		const exclude = core.getInput('exclude');
 		const dateFormat = core.getInput('date-format');
-		const reverseSort = core.getInput('reverse-sort');
+		const sort = core.getInput('reverse-sort');
 		const isDraft = core.getInput('draft') === 'true';
 		const isPrerelease = core.getInput('prerelease') === 'true';
 		const skipOnEmpty = core.getInput('skip-on-empty') === 'true';
@@ -46,7 +46,7 @@ async function run() {
 
 		core.info('Computed range: ' + range);
 
-		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, reverseSort, skipOnEmpty});
+		const releaseNotes = await generateReleaseNotes({range, exclude, commitTemplate, releaseTemplate, dateFormat, sort, skipOnEmpty});
 
 		// Skip creating release if no commits
 		// Explicit check to avoid matching an empty string https://github.com/fregante/release-with-changelog/pull/48#discussion_r719593452
