@@ -1,11 +1,8 @@
-import process from 'process';
-import {promisify} from 'util';
-import {execFile} from 'child_process';
-import {getOctokit, context} from '@actions/github';
-import core from '@actions/core';
-import {generateReleaseNotes} from './generate-release-notes.js';
-
-const execFilePromised = promisify(execFile);
+const {getOctokit, context} = require('@actions/github');
+const core = require('@actions/core');
+const util = require('util');
+const execFile = util.promisify(require('child_process').execFile);
+const {generateReleaseNotes} = require('./generate-release-notes');
 
 async function run() {
 	try {
@@ -22,10 +19,10 @@ async function run() {
 		const skipOnEmpty = core.getInput('skip-on-empty') === 'true';
 
 		// Fetch tags from remote
-		await execFilePromised('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
+		await execFile('git', ['fetch', 'origin', '+refs/tags/*:refs/tags/*']);
 
 		// Get all tags, sorted by recently created tags
-		const {stdout: t} = await execFilePromised('git', ['tag', '-l', '--sort=-creatordate']);
+		const {stdout: t} = await execFile('git', ['tag', '-l', '--sort=-creatordate']);
 		const tags = t.split('\n').filter(Boolean).map(tag => tag.trim());
 
 		if (tags.length === 0) {
@@ -43,7 +40,7 @@ async function run() {
 		// Get range to generate diff
 		let range = tags[1] + '..' + pushedTag;
 		if (tags.length < 2) {
-			const {stdout: rootCommit} = await execFilePromised('git', ['rev-list', '--max-parents=0', 'HEAD']);
+			const {stdout: rootCommit} = await execFile('git', ['rev-list', '--max-parents=0', 'HEAD']);
 			range = rootCommit.trim('') + '..' + pushedTag;
 		}
 
@@ -67,7 +64,7 @@ async function run() {
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: releaseNotes,
 			draft: isDraft,
-			prerelease: isPrerelease,
+			prerelease: isPrerelease
 		});
 		core.setOutput('skipped', false);
 		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
