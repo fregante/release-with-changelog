@@ -264,7 +264,7 @@ async function run() {
 		const commitTemplate = core_default().getInput('commit-template');
 		const exclude = core_default().getInput('exclude');
 		const dateFormat = core_default().getInput('date-format');
-		const sort = core_default().getInput('reverse-sort');
+		const sort = core_default().getInput('sort');
 		const isDraft = core_default().getInput('draft') === 'true';
 		const isPrerelease = core_default().getInput('prerelease') === 'true';
 		const skipOnEmpty = core_default().getInput('skip-on-empty') === 'true';
