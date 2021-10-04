@@ -52,5 +52,5 @@ outputs:
   skipped:
     description: Will be set to true if skip-on-empty is enabled and a release was not created, false otherwise
 runs:
-  using: 'node16'
+  using: 'node12'
   main: 'distribution/index.js'

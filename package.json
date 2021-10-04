@@ -1,6 +1,5 @@
 {
-	"name": "release-with-changelog",
-	"version": "1.0.0",
+	"private": true,
 	"description": "Create a GitHub relase with changelog for every tag you push",
 	"type": "module",
 	"main": "distribution/index.js",
@@ -36,7 +35,10 @@
 		],
 		"ignore": [
 			"distribution"
-		]
+		],
+		"rule": {
+			"unicorn/prefer-node-protocol": "off"
+		}
 	},
 	"jest": {
 		"transform": {}

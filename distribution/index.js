@@ -91,14 +91,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 14:
-/***/ (function(module) {
-
-module.exports = eval("require")("node:child_process");
-
-
-/***/ }),
-
 /***/ 16:
 /***/ (function(module) {
 
@@ -169,15 +161,15 @@ function onceStrict (fn) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:process
-var _notfoundnode_process = __webpack_require__(998);
-var _notfoundnode_process_default = /*#__PURE__*/__webpack_require__.n(_notfoundnode_process);
+// EXTERNAL MODULE: external "process"
+var external_process_ = __webpack_require__(765);
+var external_process_default = /*#__PURE__*/__webpack_require__.n(external_process_);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:util
-var _notfoundnode_util = __webpack_require__(423);
+// EXTERNAL MODULE: external "util"
+var external_util_ = __webpack_require__(669);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:child_process
-var _notfoundnode_child_process = __webpack_require__(14);
+// EXTERNAL MODULE: external "child_process"
+var external_child_process_ = __webpack_require__(129);
 
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __webpack_require__(469);
@@ -191,9 +183,9 @@ var core_default = /*#__PURE__*/__webpack_require__.n(core);
 
 
 
-const execFilePromised = Object(_notfoundnode_util.promisify)(_notfoundnode_child_process.execFile);
+const execFilePromised = Object(external_util_.promisify)(external_child_process_.execFile);
 
-const repoURL = _notfoundnode_process_default.a.env.GITHUB_SERVER_URL + '/' + _notfoundnode_process_default.a.env.GITHUB_REPOSITORY;
+const repoURL = external_process_default.a.env.GITHUB_SERVER_URL + '/' + external_process_default.a.env.GITHUB_REPOSITORY;
 
 const excludePreset = /^bump |^meta|^document|^lint|^refactor|readme|dependencies|^v?\d+\.\d+\.\d+/i;
 
@@ -261,7 +253,7 @@ async function generateReleaseNotes({
 
 
 
-const index_execFilePromised = Object(_notfoundnode_util.promisify)(_notfoundnode_child_process.execFile);
+const index_execFilePromised = Object(external_util_.promisify)(external_child_process_.execFile);
 
 async function run() {
 	try {
@@ -291,8 +283,8 @@ async function run() {
 
 		let pushedTag = core_default().getInput('tag') || tags[0];
 
-		if (_notfoundnode_process_default().env.GITHUB_REF.startsWith('refs/tags/')) {
-			pushedTag = _notfoundnode_process_default().env.GITHUB_REF.replace('refs/tags/', '');
+		if (external_process_default().env.GITHUB_REF.startsWith('refs/tags/')) {
+			pushedTag = external_process_default().env.GITHUB_REF.replace('refs/tags/', '');
 			core_default().info('Using pushed tag as reference: ' + pushedTag);
 		}
 
@@ -506,6 +498,13 @@ function getApiBaseUrl() {
 }
 exports.getApiBaseUrl = getApiBaseUrl;
 //# sourceMappingURL=utils.js.map
+
+/***/ }),
+
+/***/ 129:
+/***/ (function(module) {
+
+module.exports = require("child_process");
 
 /***/ }),
 
@@ -2041,14 +2040,6 @@ exports.endpoint = endpoint;
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 module.exports = __webpack_require__(141);
-
-
-/***/ }),
-
-/***/ 423:
-/***/ (function(module) {
-
-module.exports = eval("require")("node:util");
 
 
 /***/ }),
@@ -5563,6 +5554,13 @@ module.exports = require("zlib");
 
 /***/ }),
 
+/***/ 765:
+/***/ (function(module) {
+
+module.exports = require("process");
+
+/***/ }),
+
 /***/ 782:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -8586,14 +8584,6 @@ module.exports.toUnicode = function(domain_name, useSTD3) {
 };
 
 module.exports.PROCESSING_OPTIONS = PROCESSING_OPTIONS;
-
-
-/***/ }),
-
-/***/ 998:
-/***/ (function(module) {
-
-module.exports = eval("require")("node:process");
 
 
 /***/ })
