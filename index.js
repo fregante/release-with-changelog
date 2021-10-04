@@ -1,6 +1,6 @@
-import process from 'node:process';
-import {promisify} from 'node:util';
-import {execFile} from 'node:child_process';
+import process from 'process';
+import {promisify} from 'util';
+import {execFile} from 'child_process';
 import {getOctokit, context} from '@actions/github';
 import core from '@actions/core';
 import {generateReleaseNotes} from './generate-release-notes.js';

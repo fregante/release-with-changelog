@@ -1,6 +1,6 @@
-import {promisify} from 'node:util';
-import {execFile} from 'node:child_process';
-import process from 'node:process';
+import {promisify} from 'util';
+import {execFile} from 'child_process';
+import process from 'process';
 
 const execFilePromised = promisify(execFile);
 

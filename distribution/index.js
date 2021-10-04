@@ -94,7 +94,7 @@ function wrappy (fn, cb) {
 /***/ 14:
 /***/ (function(module) {
 
-module.exports = eval("require")("node:child_process");
+module.exports = eval("require")("child_process");
 
 
 /***/ }),
@@ -169,14 +169,14 @@ function onceStrict (fn) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:process
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?process
 var _notfoundnode_process = __webpack_require__(998);
 var _notfoundnode_process_default = /*#__PURE__*/__webpack_require__.n(_notfoundnode_process);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:util
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?util
 var _notfoundnode_util = __webpack_require__(423);
 
-// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?node:child_process
+// EXTERNAL MODULE: (webpack)/ncc/@@notfound.js?child_process
 var _notfoundnode_child_process = __webpack_require__(14);
 
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
@@ -2048,7 +2048,7 @@ module.exports = __webpack_require__(141);
 /***/ 423:
 /***/ (function(module) {
 
-module.exports = eval("require")("node:util");
+module.exports = eval("require")("util");
 
 
 /***/ }),
@@ -5328,8 +5328,8 @@ class OidcClient {
             const res = yield httpclient
                 .getJson(id_token_url)
                 .catch(error => {
-                throw new Error(`Failed to get ID Token. \n 
-        Error Code : ${error.statusCode}\n 
+                throw new Error(`Failed to get ID Token. \n
+        Error Code : ${error.statusCode}\n
         Error Message: ${error.result.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
@@ -8593,7 +8593,7 @@ module.exports.PROCESSING_OPTIONS = PROCESSING_OPTIONS;
 /***/ 998:
 /***/ (function(module) {
 
-module.exports = eval("require")("node:process");
+module.exports = eval("require")("process");
 
 
 /***/ })
@@ -8601,7 +8601,7 @@ module.exports = eval("require")("node:process");
 /******/ },
 /******/ function(__webpack_require__) { // webpackRuntimeModules
 /******/ 	"use strict";
-/******/ 
+/******/
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	!function() {
 /******/ 		// define __esModule on exports
@@ -8612,7 +8612,7 @@ module.exports = eval("require")("node:process");
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	}();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/define property getter */
 /******/ 	!function() {
 /******/ 		// define getter function for harmony exports
@@ -8623,7 +8623,7 @@ module.exports = eval("require")("node:process");
 /******/ 			}
 /******/ 		};
 /******/ 	}();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/create fake namespace object */
 /******/ 	!function() {
 /******/ 		// create a fake namespace object
@@ -8642,7 +8642,7 @@ module.exports = eval("require")("node:process");
 /******/ 			return ns;
 /******/ 		};
 /******/ 	}();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	!function() {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -8654,6 +8654,6 @@ module.exports = eval("require")("node:process");
 /******/ 			return getter;
 /******/ 		};
 /******/ 	}();
-/******/ 	
+/******/
 /******/ }
 );
