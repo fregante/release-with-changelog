@@ -20,14 +20,14 @@
 	"author": "Laxman Damera",
 	"license": "MIT",
 	"dependencies": {
-		"@actions/core": "^1.2.6",
-		"@actions/github": "^4.0.0"
+		"@actions/core": "^1.8.2",
+		"@actions/github": "^5.0.3"
 	},
 	"devDependencies": {
 		"@zeit/ncc": "^0.22.3",
-		"jest": "^26.5.3",
-		"strip-indent": "^3.0.0",
-		"xo": "^0.32.1"
+		"jest": "^28.1.0",
+		"strip-indent": "^4.0.0",
+		"xo": "^0.48.0"
 	},
 	"xo": {
 		"envs": [
