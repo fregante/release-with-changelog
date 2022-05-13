@@ -1,6 +1,6 @@
+const util = require('util');
 const {getOctokit, context} = require('@actions/github');
 const core = require('@actions/core');
-const util = require('util');
 const execFile = util.promisify(require('child_process').execFile);
 const {generateReleaseNotes} = require('./generate-release-notes');
 
@@ -64,14 +64,14 @@ async function run() {
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: releaseNotes,
 			draft: isDraft,
-			prerelease: isPrerelease
+			prerelease: isPrerelease,
 		});
-		
+
 		// Get the ID, html_url, and upload URL for the created Release from the response
 		const {
-			data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
+			data: {id: releaseId, html_url: htmlUrl, upload_url: uploadUrl},
 		} = createReleaseResponse;
-		
+
 		core.setOutput('skipped', false);
 		core.setOutput('id', releaseId);
 		core.setOutput('html_url', htmlUrl);

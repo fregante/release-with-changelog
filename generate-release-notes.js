@@ -12,7 +12,7 @@ async function generateReleaseNotes({
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
 	sort = 'desc',
-	skipOnEmpty = false
+	skipOnEmpty = false,
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
@@ -21,14 +21,14 @@ async function generateReleaseNotes({
 		'--format=%H¬%ad¬%s',
 		'--date=' + dateFormat,
 		sort === 'asc' && '--reverse',
-		range
+		range,
 	].filter(Boolean));
 	commits = commits.split('\n').filter(Boolean).map(line => {
 		const [hash, date, title] = line.split('¬');
 		return {
 			hash: hash.slice(0, 8),
 			date,
-			title
+			title,
 		};
 	});
 
