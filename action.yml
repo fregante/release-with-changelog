@@ -51,6 +51,12 @@ inputs:
 outputs:
   skipped:
     description: Will be set to true if skip-on-empty is enabled and a release was not created, false otherwise
+  id:
+    description: The ID of the created Release
+  html_url:
+    description: The URL users can navigate to in order to view the release
+  upload_url:
+    description: The URL for uploading assets to the release
 runs:
   using: 'node12'
   main: 'distribution/index.js'
