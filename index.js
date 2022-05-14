@@ -66,12 +66,12 @@ async function run() {
 			draft: isDraft,
 			prerelease: isPrerelease
 		});
-		
+
 		// Get the ID, html_url, and upload URL for the created Release from the response
 		const {
-			data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
+			data: {id: releaseId, html_url: htmlUrl, upload_url: uploadUrl}
 		} = createReleaseResponse;
-		
+
 		core.setOutput('skipped', false);
 		core.setOutput('id', releaseId);
 		core.setOutput('html_url', htmlUrl);
