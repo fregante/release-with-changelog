@@ -225,9 +225,9 @@ exports.issueCommand = issueCommand;
 /***/ 104:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const util = __webpack_require__(669);
 const {getOctokit, context} = __webpack_require__(469);
 const core = __webpack_require__(470);
+const util = __webpack_require__(669);
 const execFile = util.promisify(__webpack_require__(129).execFile);
 const {generateReleaseNotes} = __webpack_require__(353);
 
@@ -291,18 +291,9 @@ async function run() {
 			tag_name: pushedTag, // eslint-disable-line camelcase
 			body: releaseNotes,
 			draft: isDraft,
-			prerelease: isPrerelease,
+			prerelease: isPrerelease
 		});
-
-		// Get the ID, html_url, and upload URL for the created Release from the response
-		const {
-			data: {id: releaseId, html_url: htmlUrl, upload_url: uploadUrl},
-		} = createReleaseResponse;
-
 		core.setOutput('skipped', false);
-		core.setOutput('id', releaseId);
-		core.setOutput('html_url', htmlUrl);
-		core.setOutput('upload_url', uploadUrl);
 		core.info('Created release `' + createReleaseResponse.data.id + '` for tag `' + pushedTag + '`');
 	} catch (error) {
 		core.setFailed(error.message);
@@ -897,7 +888,7 @@ async function generateReleaseNotes({
 	releaseTemplate = '{commits}\n\n{range}',
 	dateFormat = 'short',
 	sort = 'desc',
-	skipOnEmpty = false,
+	skipOnEmpty = false
 }) {
 	dateFormat = dateFormat.includes('%') ? 'format:' + dateFormat : dateFormat;
 	// Get commits between computed range
@@ -906,14 +897,14 @@ async function generateReleaseNotes({
 		'--format=%H¬%ad¬%s',
 		'--date=' + dateFormat,
 		sort === 'asc' && '--reverse',
-		range,
+		range
 	].filter(Boolean));
 	commits = commits.split('\n').filter(Boolean).map(line => {
 		const [hash, date, title] = line.split('¬');
 		return {
 			hash: hash.slice(0, 8),
 			date,
-			title,
+			title
 		};
 	});
 
