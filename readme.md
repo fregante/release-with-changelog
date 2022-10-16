@@ -1,3 +1,16 @@
+# Deprecated
+
+Just use the [`gh release create` command](https://cli.github.com/manual/gh_release_create), for example:
+
+```yml
+       - name: Create release
+         env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         run: gh release create "$GITHUB_REF_NAME" # GITHUB_REF_NAME is the tag name in `on.push.tags` workflows
+```
+
+You can also attach files to the releases, for example see [this PR](https://github.com/refined-github/refined-github/pull/6084/files).
+
 # release-with-changelog
 
 <img src="./media/releases.png" align="right" width="400">
